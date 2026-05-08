@@ -1,16 +1,63 @@
-import { Text, View } from "react-native";
-import { Button, ButtonText } from "@/components/ui/button";
+import {FlatList, Pressable, View} from 'react-native'
+import {router} from 'expo-router'
+import {Screen} from '@/components/ui/Screen'
+import {Text} from '@/components/ui/Text'
+import {Card} from '@/components/ui/Card'
+import {useEffect, useState} from "react";
+import {supabase} from "@/lib/supabase";
+import {Item} from "@/types/Item";
 
-export default function Page() {
+export default function HomeScreen() {
+    const [items, setItems] = useState<Item[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchItems = async () => {
+        const {data, error} = await supabase
+            .from('items')
+            .select('*')
+            .order('title');
+
+        console.log(data);
+        console.log("errorerror", error);
+
+        if (error) console.error(error);
+        else setItems(data || []);
+
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        fetchItems();
+    }, []);
+
+
+
+    if (loading) return <Text>Loading...</Text>;
+
+
     return (
-        <View className="flex-1 items-center justify-center bg-white">
-            <Text className="text-xl font-bold text-blue-500">
-                Prototype Ready 🚀
-            </Text>
+        <Screen>
+            <View className="mb-6">
+                <Text size="xl">Overview</Text>
+            </View>
 
-            <Button>
-                <ButtonText>Click me</ButtonText>
-            </Button>
-        </View>
-    );
+            <FlatList
+                data={items}
+                keyExtractor={(item) => "id" + item.id}
+                renderItem={({item}) => (
+                    <Pressable
+                        onPress={() => router.push(`/items/${item.id}`)}
+                    >
+                        <Card>
+                            <Text size="lg">{item.title}</Text>
+
+                            <View className="mt-2">
+                                <Text size="sm">{item.description}</Text>
+                            </View>
+                        </Card>
+                    </Pressable>
+                )}
+            />
+        </Screen>
+    )
 }
