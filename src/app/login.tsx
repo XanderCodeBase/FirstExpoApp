@@ -3,12 +3,13 @@ import { useState } from 'react';
 import {
     Alert,
     ScrollView,
-    Text,
     TextInput,
     TouchableOpacity,
     View,
 } from 'react-native';
 
+import { Heading } from '@/components/ui/heading';
+import { Text } from '@/components/ui/text';
 import { useAuth } from '@/providers/AuthProvider';
 
 export default function Login() {
@@ -56,9 +57,9 @@ export default function Login() {
     return (
         <ScrollView className="flex-1 bg-slate-950">
             <View className="flex-1 justify-center p-6 pt-20">
-                <Text className="mb-2 text-center text-4xl font-bold text-white">
+                <Heading size="4xl" bold className="mb-2 text-center text-white">
                     {isLoginMode ? 'Welcome Back' : 'Create Account'}
-                </Text>
+                </Heading>
                 <Text className="mb-10 text-center text-slate-400">
                     {isLoginMode
                         ? 'Sign in to continue'

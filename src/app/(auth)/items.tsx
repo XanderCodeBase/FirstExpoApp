@@ -1,9 +1,10 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { FlatList, Pressable, ScrollView, View } from 'react-native';
 
 import { Card } from '@/components/ui/Card';
-import { Screen } from '@/components/ui/Screen';
+import { Heading } from '@/components/ui/heading';
+import { Text } from '@/components/ui/text';
 import { supabase } from '@/lib/supabase';
 import { Item } from '@/types/Item';
 
@@ -30,9 +31,9 @@ export default function HomeScreen() {
     if (loading) return <Text>Loading...</Text>;
 
     return (
-        <Screen>
-            <View className="mb-6">
-                <Text className="text-3xl font-bold text-white">Overview</Text>
+        <ScrollView className="flex-1 bg-slate-950">
+            <View className="flex-1 justify-center p-6 pt-20">
+                <Heading size="3xl" className="text-white">Overview</Heading>
             </View>
 
             <FlatList
@@ -41,12 +42,12 @@ export default function HomeScreen() {
                 renderItem={({ item }) => (
                     <Pressable onPress={() => router.push(`/item/${item.id}`)}>
                         <Card>
-                            <Text className="text-xl font-semibold text-white">
+                            <Text className="text-xl font-semibold">
                                 {item.title}
                             </Text>
 
                             <View className="mt-2">
-                                <Text className="text-white">
+                                <Text>
                                     {item.description}
                                 </Text>
                             </View>
@@ -54,6 +55,6 @@ export default function HomeScreen() {
                     </Pressable>
                 )}
             />
-        </Screen>
+        </ScrollView>
     );
 }

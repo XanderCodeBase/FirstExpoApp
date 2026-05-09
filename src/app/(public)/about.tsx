@@ -1,12 +1,15 @@
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
+
+import { Heading } from '@/components/ui/heading';
+import { Text } from '@/components/ui/text';
 
 export default function About() {
     return (
         <ScrollView className="flex-1 bg-slate-950">
             <View className="flex-1 justify-center p-6 pt-20">
-                <Text className="mb-6 text-4xl font-bold text-white">
+                <Heading size="3xl" className="text-white">
                     About This App
-                </Text>
+                </Heading>
 
                 <View className="rounded-3xl bg-slate-900 p-6">
                     <Text className="text-[17px] leading-7 text-slate-300">

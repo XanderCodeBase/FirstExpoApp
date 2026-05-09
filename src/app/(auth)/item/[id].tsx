@@ -1,10 +1,11 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import {  View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Screen } from '@/components/ui/Screen';
+import { Text } from '@/components/ui/text';
 import { supabase } from '@/lib/supabase';
 import { Item } from '@/types/Item';
 
