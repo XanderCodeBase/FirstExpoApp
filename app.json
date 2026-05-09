@@ -3,6 +3,7 @@
     "name": "FirstExpoApp",
     "slug": "FirstExpoApp",
     "version": "1.0.0",
+    "scheme": "firstexpoapp",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",

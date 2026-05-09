@@ -3,6 +3,7 @@ import {router} from 'expo-router'
 import {Screen} from '@/components/ui/Screen'
 import {Text} from '@/components/ui/Text'
 import {Card} from '@/components/ui/Card'
+import {LogoutButton} from '@/components/LogoutButton'
 import {useEffect, useState} from "react";
 import {supabase} from "@/lib/supabase";
 import {Item} from "@/types/Item";
@@ -17,9 +18,6 @@ export default function HomeScreen() {
             .select('*')
             .order('title');
 
-        console.log(data);
-        console.log("errorerror", error);
-
         if (error) console.error(error);
         else setItems(data || []);
 
@@ -30,10 +28,7 @@ export default function HomeScreen() {
         fetchItems();
     }, []);
 
-
-
     if (loading) return <Text>Loading...</Text>;
-
 
     return (
         <Screen>
@@ -58,6 +53,11 @@ export default function HomeScreen() {
                     </Pressable>
                 )}
             />
+
+            {/* Footer with Logout */}
+            <View className="p-4 border-t border-slate-800 bg-slate-900">
+                <LogoutButton variant="default" />
+            </View>
         </Screen>
     )
 }
