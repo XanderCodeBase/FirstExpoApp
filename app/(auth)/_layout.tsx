@@ -1,10 +1,11 @@
 import {
     Stack,
+    useRootNavigationState,
     useRouter,
     useSegments,
-    useRootNavigationState,
 } from 'expo-router';
 import { useEffect } from 'react';
+
 import { useAuth } from '@/providers/AuthProvider';
 
 export default function AuthLayout() {
@@ -25,7 +26,7 @@ export default function AuthLayout() {
             // Logged in but on login page
             router.replace('/(auth)/items');
         }
-    }, [user, loading, segments, navigationState]);
+    }, [user, loading, segments, navigationState, router]);
 
     return (
         <Stack>

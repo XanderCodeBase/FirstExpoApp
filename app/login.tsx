@@ -1,13 +1,14 @@
+import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-    View,
+    Alert,
+    ScrollView,
     Text,
     TextInput,
     TouchableOpacity,
-    Alert,
-    ScrollView,
+    View,
 } from 'react-native';
-import { router } from 'expo-router';
+
 import { useAuth } from '@/providers/AuthProvider';
 
 export default function Login() {
@@ -55,17 +56,17 @@ export default function Login() {
     return (
         <ScrollView className="flex-1 bg-slate-950">
             <View className="flex-1 justify-center p-6 pt-20">
-                <Text className="text-4xl font-bold text-white mb-2 text-center">
+                <Text className="mb-2 text-center text-4xl font-bold text-white">
                     {isLoginMode ? 'Welcome Back' : 'Create Account'}
                 </Text>
-                <Text className="text-slate-400 text-center mb-10">
+                <Text className="mb-10 text-center text-slate-400">
                     {isLoginMode
                         ? 'Sign in to continue'
                         : 'Sign up to get started'}
                 </Text>
 
                 <TextInput
-                    className="bg-slate-800 border border-slate-700 text-white p-5 rounded-2xl mb-4 text-base"
+                    className="mb-4 rounded-2xl border border-slate-700 bg-slate-800 p-5 text-base text-white"
                     placeholder="Email address"
                     placeholderTextColor="#888"
                     value={email}
@@ -75,7 +76,7 @@ export default function Login() {
                 />
 
                 <TextInput
-                    className="bg-slate-800 border border-slate-700 text-white p-5 rounded-2xl mb-8 text-base"
+                    className="mb-8 rounded-2xl border border-slate-700 bg-slate-800 p-5 text-base text-white"
                     placeholder="Password (min 6 characters)"
                     placeholderTextColor="#888"
                     value={password}
@@ -86,9 +87,9 @@ export default function Login() {
                 <TouchableOpacity
                     onPress={handleSubmit}
                     disabled={loading}
-                    className="bg-blue-600 py-5 rounded-2xl mb-6 active:bg-blue-700"
+                    className="mb-6 rounded-2xl bg-blue-600 py-5 active:bg-blue-700"
                 >
-                    <Text className="text-white text-center font-semibold text-lg">
+                    <Text className="text-center text-lg font-semibold text-white">
                         {loading
                             ? 'Processing...'
                             : isLoginMode
@@ -101,7 +102,7 @@ export default function Login() {
                     onPress={() => setIsLoginMode(!isLoginMode)}
                     className="py-3"
                 >
-                    <Text className="text-blue-400 text-center font-medium">
+                    <Text className="text-center font-medium text-blue-400">
                         {isLoginMode
                             ? "Don't have an account? Sign Up"
                             : 'Already have an account? Sign In'}

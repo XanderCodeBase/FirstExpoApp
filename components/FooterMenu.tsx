@@ -1,7 +1,7 @@
-import { View, Text, TouchableOpacity } from 'react-native';
-import { Link, usePathname, router } from 'expo-router';
+import { Link, router, usePathname } from 'expo-router';
+import { Alert, Text, TouchableOpacity, View } from 'react-native';
+
 import { useAuth } from '@/providers/AuthProvider';
-import { Alert } from 'react-native';
 
 export default function FooterMenu() {
     const pathname = usePathname();
@@ -25,13 +25,13 @@ export default function FooterMenu() {
     };
 
     return (
-        <View className="bg-slate-900 border-t border-slate-700 px-6 pt-3 pb-10">
-            <View className="flex-row justify-around items-center">
+        <View className="border-t border-slate-700 bg-slate-900 px-6 pb-10 pt-3">
+            <View className="flex-row items-center justify-around">
                 {/* Home Button */}
                 <Link href="/" asChild>
-                    <TouchableOpacity className="items-center flex-1 py-2">
+                    <TouchableOpacity className="flex-1 items-center py-2">
                         <Text
-                            className={`text-3xl mb-1 ${isHome ? 'text-blue-500' : 'text-slate-400'}`}
+                            className={`mb-1 text-3xl ${isHome ? 'text-blue-500' : 'text-slate-400'}`}
                         >
                             🏠
                         </Text>
@@ -45,9 +45,9 @@ export default function FooterMenu() {
 
                 {/* Items Button */}
                 <Link href="/items" asChild>
-                    <TouchableOpacity className="items-center flex-1 py-2">
+                    <TouchableOpacity className="flex-1 items-center py-2">
                         <Text
-                            className={`text-3xl mb-1 ${isHome ? 'text-blue-500' : 'text-slate-400'}`}
+                            className={`mb-1 text-3xl ${isHome ? 'text-blue-500' : 'text-slate-400'}`}
                         >
                             📋
                         </Text>
@@ -61,9 +61,9 @@ export default function FooterMenu() {
 
                 {/* About Button */}
                 <Link href="/about" asChild>
-                    <TouchableOpacity className="items-center flex-1 py-2">
+                    <TouchableOpacity className="flex-1 items-center py-2">
                         <Text
-                            className={`text-3xl mb-1 ${isAbout ? 'text-blue-500' : 'text-slate-400'}`}
+                            className={`mb-1 text-3xl ${isAbout ? 'text-blue-500' : 'text-slate-400'}`}
                         >
                             ℹ️
                         </Text>
@@ -80,9 +80,9 @@ export default function FooterMenu() {
                     // Logged In → Show Logout
                     <TouchableOpacity
                         onPress={handleLogout}
-                        className="items-center flex-1 py-2"
+                        className="flex-1 items-center py-2"
                     >
-                        <Text className="text-3xl mb-1 text-red-500">⏻</Text>
+                        <Text className="mb-1 text-3xl text-red-500">⏻</Text>
                         <Text className="text-xs font-medium text-red-500">
                             Logout
                         </Text>
@@ -90,8 +90,8 @@ export default function FooterMenu() {
                 ) : (
                     // Not Logged In → Show Login
                     <Link href="/login" asChild>
-                        <TouchableOpacity className="items-center flex-1 py-2">
-                            <Text className="text-3xl mb-1 text-blue-500">
+                        <TouchableOpacity className="flex-1 items-center py-2">
+                            <Text className="mb-1 text-3xl text-blue-500">
                                 🔑
                             </Text>
                             <Text className="text-xs font-medium text-blue-500">

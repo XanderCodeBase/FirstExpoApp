@@ -25,7 +25,7 @@ export function Button({
 }) {
     return (
         <Pressable className={buttonStyles({ variant })} onPress={onPress}>
-            <Text className="text-white font-semibold">{title}</Text>
+            <Text className="font-semibold text-white">{title}</Text>
         </Pressable>
     );
 }

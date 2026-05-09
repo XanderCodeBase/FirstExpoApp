@@ -1,11 +1,12 @@
 import { useLocalSearchParams } from 'expo-router';
-import { View, Text } from 'react-native';
-import { Screen } from '@/components/ui/Screen';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
 import { useEffect, useState } from 'react';
-import { Item } from '@/types/Item';
+import { Text, View } from 'react-native';
+
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { Screen } from '@/components/ui/Screen';
 import { supabase } from '@/lib/supabase';
+import { Item } from '@/types/Item';
 
 export default function DetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -13,21 +14,21 @@ export default function DetailScreen() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        const fetchItem = async () => {
+            const { data, error } = await supabase
+                .from('items')
+                .select('*')
+                .eq('id', id)
+                .single();
+
+            if (error) console.error(error);
+            else setItem(data);
+
+            setLoading(false);
+        };
+
         if (id) fetchItem();
     }, [id]);
-
-    const fetchItem = async () => {
-        const { data, error } = await supabase
-            .from('items')
-            .select('*')
-            .eq('id', id)
-            .single();
-
-        if (error) console.error(error);
-        else setItem(data);
-
-        setLoading(false);
-    };
 
     if (loading)
         return (

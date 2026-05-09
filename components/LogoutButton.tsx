@@ -1,5 +1,6 @@
-import { TouchableOpacity, Text, Alert } from 'react-native';
 import { router } from 'expo-router';
+import { Alert, Text, TouchableOpacity } from 'react-native';
+
 import { useAuth } from '@/providers/AuthProvider';
 
 export function LogoutButton({
@@ -22,7 +23,7 @@ export function LogoutButton({
                     } catch (error) {
                         Alert.alert(
                             'Error',
-                            'Failed to logout. Please try again.',
+                            `Failed to logout. Please try again. ${error}`,
                         );
                     }
                 },
@@ -34,9 +35,9 @@ export function LogoutButton({
         return (
             <TouchableOpacity
                 onPress={handleLogout}
-                className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/50 active:bg-red-500/20"
+                className="rounded-xl border border-red-500/50 bg-red-500/10 px-4 py-2 active:bg-red-500/20"
             >
-                <Text className="text-red-500 font-medium text-sm">Logout</Text>
+                <Text className="text-sm font-medium text-red-500">Logout</Text>
             </TouchableOpacity>
         );
     }
@@ -45,14 +46,14 @@ export function LogoutButton({
     return (
         <TouchableOpacity
             onPress={handleLogout}
-            className={`px-6 py-3 rounded-2xl ${
+            className={`rounded-2xl px-6 py-3 ${
                 variant === 'destructive'
                     ? 'bg-red-600 active:bg-red-700'
-                    : 'bg-red-500/10 border border-red-500 active:bg-red-500/20'
+                    : 'border border-red-500 bg-red-500/10 active:bg-red-500/20'
             }`}
         >
             <Text
-                className={`font-semibold text-base ${
+                className={`text-base font-semibold ${
                     variant === 'destructive' ? 'text-white' : 'text-red-500'
                 }`}
             >

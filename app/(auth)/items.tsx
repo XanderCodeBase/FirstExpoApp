@@ -1,8 +1,9 @@
-import { FlatList, Pressable, View, Text } from 'react-native';
 import { router } from 'expo-router';
-import { Screen } from '@/components/ui/Screen';
-import { Card } from '@/components/ui/Card';
 import { useEffect, useState } from 'react';
+import { FlatList, Pressable, Text, View } from 'react-native';
+
+import { Card } from '@/components/ui/Card';
+import { Screen } from '@/components/ui/Screen';
 import { supabase } from '@/lib/supabase';
 import { Item } from '@/types/Item';
 

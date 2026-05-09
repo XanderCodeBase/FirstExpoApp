@@ -1,8 +1,10 @@
-import { Stack } from 'expo-router';
-import { AuthProvider } from '@/providers/AuthProvider';
 import '../styles/globals.css';
+
+import { Stack } from 'expo-router';
 import { View } from 'react-native';
+
 import FooterMenu from '@/components/FooterMenu';
+import { AuthProvider } from '@/providers/AuthProvider';
 
 export default function RootLayout() {
     return (

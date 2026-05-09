@@ -1,6 +1,7 @@
-import { TouchableOpacity, View, Text } from 'react-native';
-import { Screen } from '@/components/ui/Screen';
 import { Link } from 'expo-router';
+import { Text, TouchableOpacity, View } from 'react-native';
+
+import { Screen } from '@/components/ui/Screen';
 
 export default function HomeScreen() {
     return (
@@ -10,16 +11,16 @@ export default function HomeScreen() {
                     Home Screen
                 </Text>
                 <Link href="/items" asChild>
-                    <TouchableOpacity className="bg-slate-700 px-5 py-2.5 rounded-xl">
-                        <Text className="text-white font-medium">
+                    <TouchableOpacity className="rounded-xl bg-slate-700 px-5 py-2.5">
+                        <Text className="font-medium text-white">
                             Go to Items
                         </Text>
                     </TouchableOpacity>
                 </Link>
 
                 <Link href="/about" asChild>
-                    <TouchableOpacity className="bg-slate-700 px-5 py-2.5 rounded-xl">
-                        <Text className="text-white font-medium">About</Text>
+                    <TouchableOpacity className=" rounded-xl bg-slate-700 px-5 py-2.5">
+                        <Text className="font-medium text-white">About</Text>
                     </TouchableOpacity>
                 </Link>
             </View>
