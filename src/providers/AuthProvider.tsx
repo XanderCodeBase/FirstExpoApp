@@ -2,15 +2,7 @@ import { Session, User } from '@supabase/supabase-js';
 import { createContext, useContext, useEffect, useState } from 'react';
 
 import { supabase } from '@/lib/supabase';
-
-type AuthContextType = {
-    user: User | null;
-    session: Session | null;
-    loading: boolean;
-    signUp: (email: string, password: string) => Promise<void>;
-    signIn: (email: string, password: string) => Promise<void>;
-    signOut: () => Promise<void>;
-};
+import { AuthContextType } from '@/types/AuthContextType';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 

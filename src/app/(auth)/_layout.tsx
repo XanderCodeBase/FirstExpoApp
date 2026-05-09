@@ -32,11 +32,11 @@ export default function AuthLayout() {
         <Stack>
             <Stack.Screen
                 name="index"
-                options={{ headerShown: true, title: 'My Items' }}
+                options={{ headerShown: false, title: 'My Items' }}
             />
             <Stack.Screen
                 name="items/[id]"
-                options={{ headerShown: true, title: 'Detail' }}
+                options={{ headerShown: false, title: 'Detail' }}
             />
         </Stack>
     );

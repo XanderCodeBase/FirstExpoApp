@@ -1,6 +1,7 @@
 import '@/styles/globals.css';
 
-import { Stack } from 'expo-router';
+import { Tabs } from 'expo-router';
+import { Home, LogInIcon, Search, Settings } from 'lucide-react-native';
 import { View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -14,12 +15,28 @@ export default function RootLayout() {
             <GluestackUIProvider mode="dark">
                 <SafeAreaProvider>
                     <View className="flex-1 bg-slate-950">
-                        <Stack screenOptions={{ headerShown: false }}>
-                            <Stack.Screen name="index" />
-                            <Stack.Screen name="login" />
-                            <Stack.Screen name="(public)" />
-                            <Stack.Screen name="(auth)" />
-                        </Stack>
+                        <Tabs screenOptions={{ headerShown: false }}>
+                            <Tabs.Screen name="index"
+                                options={{
+                                    title: 'Home',
+                                    tabBarIcon: ({ color }) => <Home size={28} color={color} />,
+                                }}/>
+                            <Tabs.Screen name="login"
+                                options={{
+                                    title: 'Home',
+                                    tabBarIcon: ({ color }) => <Settings size={28} color={color} />,
+                                }}/>
+                            <Tabs.Screen name="(public)"
+                                options={{
+                                    title: 'Home',
+                                    tabBarIcon: ({ color }) => <Search size={28} color={color} />,
+                                }}/>
+                            <Tabs.Screen name="(auth)"
+                                options={{
+                                    title: 'Login',
+                                    tabBarIcon: ({ color }) => <LogInIcon size={28} color={color} />,
+                                }}/>
+                        </Tabs>
                         <FooterMenu />
                     </View>
                 </SafeAreaProvider>

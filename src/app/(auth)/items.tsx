@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { FlatList, Pressable, ScrollView, View } from 'react-native';
+import { FlatList, Pressable, View } from 'react-native';
 
 import { Card } from '@/components/ui/Card';
 import { Heading } from '@/components/ui/heading';
@@ -31,7 +31,7 @@ export default function HomeScreen() {
     if (loading) return <Text>Loading...</Text>;
 
     return (
-        <ScrollView className="flex-1 bg-slate-950">
+        <>
             <View className="flex-1 justify-center p-6 pt-20">
                 <Heading size="3xl" className="text-white">Overview</Heading>
             </View>
@@ -55,6 +55,6 @@ export default function HomeScreen() {
                     </Pressable>
                 )}
             />
-        </ScrollView>
+        </>
     );
 }
