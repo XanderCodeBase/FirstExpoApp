@@ -1,5 +1,5 @@
-import { Text as RNText } from 'react-native'
-import { tv } from 'tailwind-variants'
+import { Text as RNText } from 'react-native';
+import { tv } from 'tailwind-variants';
 
 const textStyles = tv({
     base: 'text-white',
@@ -14,8 +14,11 @@ const textStyles = tv({
     defaultVariants: {
         size: 'md',
     },
-})
+});
 
-export function Text({children, size,}: React.PropsWithChildren<{ size?: 'sm' | 'md' | 'lg' | 'xl' }>) {
-    return <RNText className={textStyles({size})}>{children}</RNText>
+export function Text({
+    children,
+    size,
+}: React.PropsWithChildren<{ size?: 'sm' | 'md' | 'lg' | 'xl' }>) {
+    return <RNText className={textStyles({ size })}>{children}</RNText>;
 }

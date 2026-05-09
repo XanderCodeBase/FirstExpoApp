@@ -25,11 +25,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setLoading(false);
         });
 
-        const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-            setSession(session);
-            setUser(session?.user ?? null);
-            setLoading(false);
-        });
+        const { data: listener } = supabase.auth.onAuthStateChange(
+            (_event, session) => {
+                setSession(session);
+                setUser(session?.user ?? null);
+                setLoading(false);
+            },
+        );
 
         return () => listener.subscription.unsubscribe();
     }, []);
@@ -40,7 +42,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const signIn = async (email: string, password: string) => {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
         if (error) throw error;
     };
 
@@ -49,7 +54,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, session, loading, signUp, signIn, signOut }}>
+        <AuthContext.Provider
+            value={{ user, session, loading, signUp, signIn, signOut }}
+        >
             {children}
         </AuthContext.Provider>
     );
@@ -57,6 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
-    if (context === undefined) throw new Error('useAuth must be used within AuthProvider');
+    if (context === undefined)
+        throw new Error('useAuth must be used within AuthProvider');
     return context;
 };

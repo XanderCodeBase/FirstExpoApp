@@ -1,6 +1,12 @@
-// app/login.tsx
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    Alert,
+    ScrollView,
+} from 'react-native';
 import { router } from 'expo-router';
 import { useAuth } from '@/providers/AuthProvider';
 
@@ -8,7 +14,7 @@ export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const [isLoginMode, setIsLoginMode] = useState(true);   // Toggle between Login & Sign Up
+    const [isLoginMode, setIsLoginMode] = useState(true); // Toggle between Login & Sign Up
 
     const { signIn, signUp } = useAuth();
 
@@ -24,14 +30,19 @@ export default function Login() {
             if (isLoginMode) {
                 // Login
                 await signIn(email, password);
-                router.replace('/');
+                router.replace('/(auth)');
             } else {
                 // Sign Up
                 await signUp(email, password);
                 Alert.alert(
                     'Account Created',
                     'Your account has been created successfully!\n\nYou can now sign in.',
-                    [{ text: 'Go to Sign In', onPress: () => setIsLoginMode(true) }]
+                    [
+                        {
+                            text: 'Go to Sign In',
+                            onPress: () => setIsLoginMode(true),
+                        },
+                    ],
                 );
             }
         } catch (error: any) {
@@ -81,8 +92,8 @@ export default function Login() {
                         {loading
                             ? 'Processing...'
                             : isLoginMode
-                                ? 'Sign In'
-                                : 'Create Account'}
+                              ? 'Sign In'
+                              : 'Create Account'}
                     </Text>
                 </TouchableOpacity>
 
@@ -93,7 +104,7 @@ export default function Login() {
                     <Text className="text-blue-400 text-center font-medium">
                         {isLoginMode
                             ? "Don't have an account? Sign Up"
-                            : "Already have an account? Sign In"}
+                            : 'Already have an account? Sign In'}
                     </Text>
                 </TouchableOpacity>
             </View>

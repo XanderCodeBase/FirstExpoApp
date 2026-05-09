@@ -3,15 +3,15 @@ module.exports = function (api) {
 
     return {
         presets: [
-            ["babel-preset-expo", { jsxImportSource: "nativewind" }],
-            "nativewind/babel",           // ← Move here (as preset)
+            ['babel-preset-expo', { jsxImportSource: 'nativewind' }],
+            'nativewind/babel', // ← Move here (as preset)
         ],
         plugins: [
             // Expo Router (can be explicit, but often not needed)
             // require.resolve('expo-router/babel'), // try without first
 
             // Reanimated MUST be last
-            "react-native-reanimated/plugin",
+            'react-native-reanimated/plugin',
         ],
     };
 };

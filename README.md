@@ -21,7 +21,6 @@ https://supabase.com/docs/guides/getting-started/quickstarts/expo-react-native
 
 Supabase suMryv-qagvet-nycda7
 
-
 npm install nativewind tailwindcss react-native-reanimated react-native-safe-area-context
 
 npx expo install expo-router react-native-screens react-native-safe-area-context
