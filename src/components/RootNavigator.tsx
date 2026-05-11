@@ -32,7 +32,7 @@ export default function RootNavigator() {
     return (
         <Stack screenOptions={{ headerShown: true }}>
             <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="(auth)" />
+            <Stack.Screen name="(auth)/login" />
             <Stack.Screen name="item/[id]" />
         </Stack>
     );
