@@ -4,6 +4,7 @@ import { FlatList, Pressable, View } from 'react-native';
 
 import { Card } from '@/components/ui/Card';
 import { Heading } from '@/components/ui/heading';
+import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/text';
 import { supabase } from '@/lib/supabase';
 import { Item } from '@/types/Item';
@@ -31,14 +32,14 @@ export default function HomeScreen() {
     if (loading) return <Text>Loading...</Text>;
 
     return (
-        <>
-            <View className="flex-1 justify-center p-6 pt-20">
-                <Heading size="3xl" className="text-white">Overview</Heading>
-            </View>
+        <Screen>
+            <Heading size="3xl" className="text-white">
+                Overview
+            </Heading>
 
             <FlatList
                 data={items}
-                keyExtractor={(item) => 'id' + item.id}
+                keyExtractor={(item) => 'id-' + item.id}
                 renderItem={({ item }) => (
                     <Pressable onPress={() => router.push(`/item/${item.id}`)}>
                         <Card>
@@ -47,14 +48,12 @@ export default function HomeScreen() {
                             </Text>
 
                             <View className="mt-2">
-                                <Text>
-                                    {item.description}
-                                </Text>
+                                <Text>{item.description}</Text>
                             </View>
                         </Card>
                     </Pressable>
                 )}
             />
-        </>
+        </Screen>
     );
 }

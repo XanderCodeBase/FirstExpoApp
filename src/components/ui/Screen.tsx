@@ -1,10 +1,11 @@
+import { PropsWithChildren } from 'react';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export function Screen({ children }: React.PropsWithChildren) {
+export function Screen({ children }: PropsWithChildren) {
     return (
-        <SafeAreaView className="flex-1 bg-background">
-            <View className="flex-1 px-4 py-3">{children}</View>
+        <SafeAreaView>
+            <View className="m-3">{children}</View>
         </SafeAreaView>
     );
 }

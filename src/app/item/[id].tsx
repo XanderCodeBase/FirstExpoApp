@@ -1,9 +1,10 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import {  View } from 'react-native';
+import { View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { Heading } from '@/components/ui/heading';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/text';
 import { supabase } from '@/lib/supabase';
@@ -34,22 +35,33 @@ export default function DetailScreen() {
     if (loading)
         return (
             <Screen>
-                <Text>Loading...</Text>
+                <Heading>Loading...</Heading>
             </Screen>
         );
     if (!item)
         return (
             <Screen>
-                <Text>Item not found</Text>
+                <Heading>Item not found</Heading>
             </Screen>
         );
 
     return (
         <Screen>
+            <Text>asdf asdf asdf asdf</Text>
             <Card>
-                <Text className="text-3xl font-bold text-white">
-                    {item.title}
-                </Text>
+                <Heading
+                    size="4xl"
+                    bold
+                    className="mb-4 text-center text-white"
+                >
+                    Home Screen
+                </Heading>
+
+                <Heading size="3xl" className="text-blue-600">
+                    Item {item.title}
+                </Heading>
+
+                <Text className="text-3xl font-bold">{item.title}</Text>
 
                 <View className="mt-4">
                     <Text className="text-xl font-semibold text-white">

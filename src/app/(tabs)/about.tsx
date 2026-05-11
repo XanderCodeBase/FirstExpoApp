@@ -3,7 +3,7 @@ import { ScrollView, View } from 'react-native';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 
-export default function About() {
+export default function AboutScreen() {
     return (
         <ScrollView className="flex-1 bg-slate-950">
             <View className="flex-1 justify-center p-6 pt-20">

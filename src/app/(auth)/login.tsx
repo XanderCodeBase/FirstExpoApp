@@ -30,11 +30,9 @@ export default function Login() {
 
         try {
             if (isLoginMode) {
-                // Login
                 await signIn(email, password);
-                router.replace('/(auth)');
+                router.replace('/');
             } else {
-                // Sign Up
                 await signUp(email, password);
                 Alert.alert(
                     'Account Created',
