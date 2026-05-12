@@ -1,7 +1,13 @@
 import '@/styles/globals.css';
 
 import { Tabs } from 'expo-router';
-import { Home, LogInIcon, Search, Settings } from 'lucide-react-native';
+import {
+    Home,
+    ListTodo,
+    LogInIcon,
+    Search,
+    Settings,
+} from 'lucide-react-native';
 
 export default function TabLayout() {
     return (
@@ -43,11 +49,11 @@ export default function TabLayout() {
             />
 
             <Tabs.Screen
-                name="profile"
+                name="task"
                 options={{
-                    title: 'Profile',
+                    title: 'Task',
                     tabBarIcon: ({ color }) => (
-                        <Settings size={28} color={color} />
+                        <ListTodo size={28} color={color} />
                     ),
                 }}
             />

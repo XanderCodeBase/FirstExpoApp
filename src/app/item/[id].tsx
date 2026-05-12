@@ -9,7 +9,7 @@ import { Text } from '@/components/ui/text';
 import { supabase } from '@/lib/supabase';
 import { Item } from '@/types/Item';
 
-export default function DetailScreen() {
+export default function ItemDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const [item, setItem] = useState<Item | null>(null);
     const [loading, setLoading] = useState(true);

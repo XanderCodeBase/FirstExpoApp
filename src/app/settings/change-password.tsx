@@ -49,7 +49,7 @@ export default function ChangePassword() {
     };
 
     return (
-        <ScrollView className="flex-1 p-4">
+        <ScrollView className="flex-1 bg-slate-900 p-4">
             <Heading size="3xl" bold className="mb-2 text-center text-white">
                 Change Password
             </Heading>

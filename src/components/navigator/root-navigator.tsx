@@ -34,6 +34,7 @@ export default function RootNavigator() {
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="(auth)/login" />
             <Stack.Screen name="item/[id]" />
+            <Stack.Screen name="task/[id]" />
             <Stack.Screen name="settings/change-password" />
         </Stack>
     );
