@@ -1,12 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import {
-    Alert,
-    ScrollView,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from 'react-native';
+import { Alert, Pressable, TextInput, View } from 'react-native';
 
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
@@ -53,61 +47,57 @@ export default function Login() {
     };
 
     return (
-        <ScrollView className="flex-1 bg-slate-950">
-            <View className="flex-1 justify-center p-6 pt-20">
-                <Heading size="4xl" bold className="mb-2 text-center text-white">
-                    {isLoginMode ? 'Welcome Back' : 'Create Account'}
-                </Heading>
-                <Text className="mb-10 text-center text-slate-400">
-                    {isLoginMode
-                        ? 'Sign in to continue'
-                        : 'Sign up to get started'}
+        <View className="flex-1 bg-slate-900 p-4">
+            <Heading size="3xl" bold className="mb-2 text-center text-white">
+                {isLoginMode ? 'Welcome Back' : 'Create Account'}
+            </Heading>
+            <Text className="mb-10 text-center text-slate-400">
+                {isLoginMode ? 'Sign in to continue' : 'Sign up to get started'}
+            </Text>
+
+            <TextInput
+                className="mb-4 rounded-2xl border border-slate-700 bg-slate-800 p-5 text-base text-white"
+                placeholder="Email address"
+                placeholderTextColor="#888"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
+            />
+
+            <TextInput
+                className="mb-8 rounded-2xl border border-slate-700 bg-slate-800 p-5 text-base text-white"
+                placeholder="Password (min 6 characters)"
+                placeholderTextColor="#888"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+            />
+
+            <Pressable
+                onPress={handleSubmit}
+                disabled={loading}
+                className="mb-6 rounded-2xl bg-blue-600 py-5 active:bg-blue-700"
+            >
+                <Text className="text-center text-lg font-semibold text-white">
+                    {loading
+                        ? 'Processing...'
+                        : isLoginMode
+                          ? 'Sign In'
+                          : 'Create Account'}
                 </Text>
+            </Pressable>
 
-                <TextInput
-                    className="mb-4 rounded-2xl border border-slate-700 bg-slate-800 p-5 text-base text-white"
-                    placeholder="Email address"
-                    placeholderTextColor="#888"
-                    value={email}
-                    onChangeText={setEmail}
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                />
-
-                <TextInput
-                    className="mb-8 rounded-2xl border border-slate-700 bg-slate-800 p-5 text-base text-white"
-                    placeholder="Password (min 6 characters)"
-                    placeholderTextColor="#888"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                />
-
-                <TouchableOpacity
-                    onPress={handleSubmit}
-                    disabled={loading}
-                    className="mb-6 rounded-2xl bg-blue-600 py-5 active:bg-blue-700"
-                >
-                    <Text className="text-center text-lg font-semibold text-white">
-                        {loading
-                            ? 'Processing...'
-                            : isLoginMode
-                              ? 'Sign In'
-                              : 'Create Account'}
-                    </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    onPress={() => setIsLoginMode(!isLoginMode)}
-                    className="py-3"
-                >
-                    <Text className="text-center font-medium text-blue-400">
-                        {isLoginMode
-                            ? "Don't have an account? Sign Up"
-                            : 'Already have an account? Sign In'}
-                    </Text>
-                </TouchableOpacity>
-            </View>
-        </ScrollView>
+            <Pressable
+                onPress={() => setIsLoginMode(!isLoginMode)}
+                className="py-3"
+            >
+                <Text className="text-center font-medium text-blue-400">
+                    {isLoginMode
+                        ? "Don't have an account? Sign Up"
+                        : 'Already have an account? Sign In'}
+                </Text>
+            </Pressable>
+        </View>
     );
 }
