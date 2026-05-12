@@ -2,9 +2,8 @@ import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { FlatList, Pressable, View } from 'react-native';
 
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui/card';
 import { Heading } from '@/components/ui/heading';
-import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/text';
 import { supabase } from '@/lib/supabase';
 import { Item } from '@/types/Item';
@@ -32,8 +31,8 @@ export default function HomeScreen() {
     if (loading) return <Text>Loading...</Text>;
 
     return (
-        <Screen>
-            <Heading size="3xl" className="text-white">
+        <View className="flex-1 bg-slate-900 p-4">
+            <Heading size="3xl" bold className="mb-2 text-white">
                 Overview
             </Heading>
 
@@ -42,18 +41,18 @@ export default function HomeScreen() {
                 keyExtractor={(item) => 'id-' + item.id}
                 renderItem={({ item }) => (
                     <Pressable onPress={() => router.push(`/item/${item.id}`)}>
-                        <Card>
-                            <Text className="text-xl font-semibold">
-                                {item.title}
-                            </Text>
+                        <Card className="mb-4 rounded-2xl border border-slate-700 p-4">
+                            <Heading size="2xl" className="text-blue-600">
+                                Item {item.title}
+                            </Heading>
 
-                            <View className="mt-2">
-                                <Text>{item.description}</Text>
-                            </View>
+                            <Text className="text-xl font-semibold">
+                                {item.description}
+                            </Text>
                         </Card>
                     </Pressable>
                 )}
             />
-        </Screen>
+        </View>
     );
 }

@@ -30,7 +30,7 @@ export default function RootNavigator() {
     }, [user, loading, segments, navigationState, router]);
 
     return (
-        <Stack screenOptions={{ headerShown: true }}>
+        <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="(auth)/login" />
             <Stack.Screen name="item/[id]" />

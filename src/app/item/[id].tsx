@@ -1,11 +1,10 @@
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Heading } from '@/components/ui/heading';
-import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/text';
 import { supabase } from '@/lib/supabase';
 import { Item } from '@/types/Item';
@@ -32,50 +31,24 @@ export default function DetailScreen() {
         if (id) fetchItem();
     }, [id]);
 
-    if (loading)
-        return (
-            <Screen>
-                <Heading>Loading...</Heading>
-            </Screen>
-        );
-    if (!item)
-        return (
-            <Screen>
-                <Heading>Item not found</Heading>
-            </Screen>
-        );
+    if (loading) return <Heading>Loading...</Heading>;
+    if (!item) return <Heading>Item not found</Heading>;
 
     return (
-        <Screen>
-            <Text>asdf asdf asdf asdf</Text>
-            <Card>
-                <Heading
-                    size="4xl"
-                    bold
-                    className="mb-4 text-center text-white"
-                >
-                    Home Screen
-                </Heading>
-
-                <Heading size="3xl" className="text-blue-600">
+        <View className="flex-1 bg-slate-900 p-4">
+            <Card className="rounded-2xl border border-slate-700 p-4">
+                <Heading size="2xl" className="text-blue-600">
                     Item {item.title}
                 </Heading>
 
-                <Text className="text-3xl font-bold">{item.title}</Text>
+                <Text className="text-xl font-semibold">
+                    {item.description}
+                </Text>
 
-                <View className="mt-4">
-                    <Text className="text-xl font-semibold text-white">
-                        {item.description}
-                    </Text>
-                </View>
-
-                <View className="mt-6">
-                    <Button
-                        title="Do Something"
-                        onPress={() => console.log('Pressed')}
-                    />
-                </View>
+                <Button onPress={() => router.back()}>
+                    <ButtonText>Do Something</ButtonText>
+                </Button>
             </Card>
-        </Screen>
+        </View>
     );
 }
