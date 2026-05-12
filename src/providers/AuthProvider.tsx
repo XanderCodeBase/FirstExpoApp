@@ -46,9 +46,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await supabase.auth.signOut();
     };
 
+    const changePassword = async (oldPassword: string, newPassword: string) => {
+        const { error } = await supabase.auth.updateUser({
+            password: newPassword,
+            current_password: oldPassword,
+        });
+
+        if (error) throw error;
+
+        // Optional: Refresh session to make sure everything is in sync
+        await supabase.auth.refreshSession();
+    };
+
     return (
         <AuthContext.Provider
-            value={{ user, session, loading, signUp, signIn, signOut }}
+            value={{
+                user,
+                session,
+                loading,
+                signUp,
+                signIn,
+                signOut,
+                changePassword,
+            }}
         >
             {children}
         </AuthContext.Provider>

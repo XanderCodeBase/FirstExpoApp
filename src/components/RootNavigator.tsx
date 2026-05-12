@@ -27,13 +27,14 @@ export default function RootNavigator() {
         if (user && inAuthGroup) {
             router.replace('/');
         }
-    }, [user, loading, segments, navigationState]);
+    }, [user, loading, segments, navigationState, router]);
 
     return (
         <Stack screenOptions={{ headerShown: true }}>
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="(auth)/login" />
             <Stack.Screen name="item/[id]" />
+            <Stack.Screen name="settings/change-password" />
         </Stack>
     );
 }
