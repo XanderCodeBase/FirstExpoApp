@@ -8,8 +8,9 @@ import { useEffect } from 'react';
 
 import { useAuth } from '@/providers/AuthProvider';
 
-export default function AuthLayout() {
+export default function RootNavigator() {
     const { user, loading } = useAuth();
+
     const segments = useSegments();
     const router = useRouter();
     const navigationState = useRootNavigationState();
@@ -19,25 +20,21 @@ export default function AuthLayout() {
 
         const inAuthGroup = segments[0] === '(auth)';
 
-        if (!user && inAuthGroup) {
-            // Not logged in but trying to access protected route
+        if (!user && !inAuthGroup) {
             router.replace('/login');
-        } else if (user && !inAuthGroup) {
-            // Logged in but on login page
-            router.replace('/(auth)/items');
+        }
+
+        if (user && inAuthGroup) {
+            router.replace('/');
         }
     }, [user, loading, segments, navigationState, router]);
 
     return (
-        <Stack>
-            <Stack.Screen
-                name="index"
-                options={{ headerShown: true, title: 'My Items' }}
-            />
-            <Stack.Screen
-                name="items/[id]"
-                options={{ headerShown: true, title: 'Detail' }}
-            />
+        <Stack screenOptions={{ headerShown: true }}>
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="(auth)/login" />
+            <Stack.Screen name="item/[id]" />
+            <Stack.Screen name="settings/change-password" />
         </Stack>
     );
 }

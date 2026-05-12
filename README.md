@@ -28,7 +28,8 @@ npx expo install expo-router react-native-screens react-native-safe-area-context
 npx gluestack-ui init
 
 After changes or upgrades:
+
 - npx expo install some-package
-- npx expo install --fix          # fixes versions to match your Expo SDK
-- npx expo-doctor                 # checks for issues
+- npx expo install --fix # fixes versions to match your Expo SDK
+- npx expo-doctor # checks for issues
 - npx expo install --check
