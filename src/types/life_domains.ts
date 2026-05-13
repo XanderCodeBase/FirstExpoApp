@@ -1,12 +1,12 @@
 export const life_domains = {
-    IntimateRelationship: 'Intimate Relationship',
+    ContributionToSociety: 'Contribution to Society',
+    Community: 'Community',
     Family: 'Family',
     Friends: 'Friends',
-    Community: 'Community',
-    Work: 'Work',
+    IntimateRelationship: 'Intimate Relationship',
     PersonalGrowth: 'Personal Growth',
     PhysicalHealth: 'Physical Health',
-    ContributionToSociety: 'Contribution to Society',
+    Work: 'Work',
 } as const;
 
-export type LifeDomains = (typeof life_domains)[keyof typeof life_domains];
+export type LifeDomainKeys = keyof typeof life_domains;

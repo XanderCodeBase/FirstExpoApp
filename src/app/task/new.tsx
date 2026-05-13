@@ -1,19 +1,40 @@
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRouter } from 'expo-router';
 import { ArrowLeft, Save } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { Alert, ScrollView } from 'react-native';
+import { Alert, Platform, ScrollView } from 'react-native';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Box } from '@/components/ui/box';
 import { Button } from '@/components/ui/button';
 import { HStack } from '@/components/ui/hstack';
 import { Input, InputField } from '@/components/ui/input';
+import {
+    Modal,
+    ModalBackdrop,
+    ModalBody,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+} from '@/components/ui/modal';
 import { Pressable } from '@/components/ui/pressable';
+import {
+    Select,
+    SelectBackdrop,
+    SelectContent,
+    SelectDragIndicator,
+    SelectDragIndicatorWrapper,
+    SelectInput,
+    SelectItem,
+    SelectPortal,
+    SelectTrigger,
+} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { db } from '@/db';
 import { tasks } from '@/db/schema';
+import { life_domains, LifeDomainKeys } from '@/types/life_domains';
 
 export default function NewTaskScreen() {
     const router = useRouter();
@@ -22,11 +43,49 @@ export default function NewTaskScreen() {
         title: '',
         description: '',
         is_completed: false,
-        due_date: '',
-        start_date: '',
+        due_date: '' as string,
+        start_date: '' as string,
         life_domains: '',
         priority: 0,
     });
+
+    const [showModal, setShowModal] = useState(false);
+    const [currentField, setCurrentField] = useState<'due_date' | 'start_date' | null>(null);
+    const [tempDate, setTempDate] = useState(new Date());
+
+    const openPicker = (field: 'due_date' | 'start_date') => {
+        setCurrentField(field);
+        setTempDate(form[field] ? new Date(form[field]) : new Date());
+        setShowModal(true);
+    };
+
+    const onDateChange = (event: any, selectedDate?: Date) => {
+        if (selectedDate) setTempDate(selectedDate);
+    };
+
+    const handleConfirm = () => {
+        if (currentField) {
+            setForm((prev) => ({
+                ...prev,
+                [currentField]: tempDate.toISOString(),
+            }));
+        }
+        setShowModal(false);
+    };
+
+    const handleCancel = () => setShowModal(false);
+
+    const formatDisplay = (isoString: string) => {
+        if (!isoString) return 'Not set';
+        return new Date(isoString).toLocaleString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+        });
+    };
 
     const handleSave = async () => {
         if (!form.title.trim()) {
@@ -36,8 +95,8 @@ export default function NewTaskScreen() {
 
         await db.insert(tasks).values({
             id: uuidv4(),
-            title: form.title,
-            description: form.description || null,
+            title: form.title.trim(),
+            description: form.description.trim() || null,
             is_completed: form.is_completed,
             due_date: form.due_date || null,
             start_date: form.start_date || null,
@@ -55,6 +114,7 @@ export default function NewTaskScreen() {
 
     return (
         <Box className="flex-1 bg-gray-50 dark:bg-zinc-950">
+            {/* Header */}
             <HStack className="items-center justify-between border-b bg-white px-6 pb-4 pt-12 dark:bg-zinc-900">
                 <Pressable onPress={() => router.back()} className="p-2">
                     <ArrowLeft size={28} />
@@ -67,12 +127,12 @@ export default function NewTaskScreen() {
             </HStack>
 
             <ScrollView className="flex-1 p-6">
-                <VStack space="md">
+                <VStack space="lg">
                     <VStack>
-                        <Text className="mb-1.5 font-medium">Title *</Text>
+                        <Text className="text-typography-700 mb-1.5 font-medium">Title *</Text>
                         <Input>
                             <InputField
-                                placeholder="Enter task title"
+                                placeholder="What needs to be done?"
                                 value={form.title}
                                 onChangeText={(text) => setForm({ ...form, title: text })}
                             />
@@ -80,75 +140,113 @@ export default function NewTaskScreen() {
                     </VStack>
 
                     <VStack>
-                        <Text className="mb-1.5 font-medium">Description</Text>
+                        <Text className="text-typography-700 mb-1.5 font-medium">Description</Text>
                         <Input>
                             <InputField
-                                placeholder="Enter description"
+                                placeholder="Add more details..."
                                 value={form.description}
                                 onChangeText={(text) => setForm({ ...form, description: text })}
                                 multiline
                                 numberOfLines={4}
-                                className="min-h-[100px]"
+                                className="min-h-[110px]"
                             />
                         </Input>
                     </VStack>
 
                     <VStack>
-                        <Text className="mb-1.5 font-medium">Due Date</Text>
-                        <Input>
-                            <InputField
-                                placeholder="YYYY-MM-DD"
-                                value={form.due_date}
-                                onChangeText={(text) => setForm({ ...form, due_date: text })}
-                            />
-                        </Input>
+                        <Text className="text-typography-700 mb-1.5 font-medium">Life Domain</Text>
+                        <Select
+                            onValueChange={(value) => setForm({ ...form, life_domains: value })}
+                        >
+                            <SelectTrigger>
+                                <SelectInput
+                                    placeholder="Select a domain"
+                                    value={form.life_domains}
+                                />
+                            </SelectTrigger>
+                            <SelectPortal>
+                                <SelectBackdrop />
+                                <SelectContent>
+                                    <SelectDragIndicatorWrapper>
+                                        <SelectDragIndicator />
+                                    </SelectDragIndicatorWrapper>
+                                    {Object.entries(life_domains).map(([key, label]) => (
+                                        <SelectItem
+                                            key={key}
+                                            value={key as LifeDomainKeys}
+                                            label={label}
+                                        />
+                                    ))}
+                                </SelectContent>
+                            </SelectPortal>
+                        </Select>
                     </VStack>
 
+                    {/* Start */}
                     <VStack>
-                        <Text className="mb-1.5 font-medium">Start Date</Text>
-                        <Input>
-                            <InputField
-                                placeholder="YYYY-MM-DD"
-                                value={form.start_date}
-                                onChangeText={(text) => setForm({ ...form, start_date: text })}
-                            />
-                        </Input>
+                        <Text className="text-typography-700 mb-1.5 font-medium">Start</Text>
+                        <Pressable className="flex-1" onPress={() => openPicker('start_date')}>
+                            <Input pointerEvents="none">
+                                <InputField
+                                    value={formatDisplay(form.start_date)}
+                                    editable={false}
+                                />
+                            </Input>
+                        </Pressable>
                     </VStack>
 
+                    {/* Due */}
                     <VStack>
-                        <Text className="mb-1.5 font-medium">Life Domains (comma separated)</Text>
-                        <Input>
-                            <InputField
-                                placeholder="health, career, family"
-                                value={form.life_domains}
-                                onChangeText={(text) => setForm({ ...form, life_domains: text })}
-                            />
-                        </Input>
+                        <Text className="text-typography-700 mb-1.5 font-medium">Due</Text>
+                        <Pressable className="flex-1" onPress={() => openPicker('due_date')}>
+                            <Input pointerEvents="none">
+                                <InputField value={formatDisplay(form.due_date)} editable={false} />
+                            </Input>
+                        </Pressable>
                     </VStack>
 
-                    <HStack className="items-center justify-between py-2">
+                    <HStack className="items-center justify-between py-3">
                         <Text className="font-medium">Mark as completed</Text>
                         <Switch
                             value={form.is_completed}
                             onValueChange={(val) => setForm({ ...form, is_completed: val })}
                         />
                     </HStack>
-
-                    <VStack>
-                        <Text className="mb-1.5 font-medium">Priority</Text>
-                        <Input>
-                            <InputField
-                                keyboardType="numeric"
-                                placeholder="0"
-                                value={form.priority.toString()}
-                                onChangeText={(text) =>
-                                    setForm({ ...form, priority: parseInt(text) || 0 })
-                                }
-                            />
-                        </Input>
-                    </VStack>
                 </VStack>
             </ScrollView>
+
+            {/* Date/Time Picker Modal */}
+            <Modal isOpen={showModal} onClose={handleCancel}>
+                <ModalBackdrop />
+                <ModalContent className="max-w-[380px]">
+                    <ModalHeader>
+                        <Text className="text-lg font-semibold">
+                            {currentField === 'start_date' ? 'Select Start' : 'Select Due'} Date &
+                            Time
+                        </Text>
+                    </ModalHeader>
+
+                    <ModalBody contentContainerClassName="py-6 items-center">
+                        {showModal && (
+                            <DateTimePicker
+                                value={tempDate}
+                                mode="datetime" // ← Combined mode
+                                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                                onChange={onDateChange}
+                            />
+                        )}
+                    </ModalBody>
+
+                    <ModalFooter className="gap-3">
+                        <Button variant="outline" onPress={handleCancel} className="flex-1">
+                            <Text>Cancel</Text>
+                        </Button>
+                        <Button onPress={handleConfirm} className="flex-1">
+                            <Text className="text-white">Confirm</Text>
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
         </Box>
     );
 }
