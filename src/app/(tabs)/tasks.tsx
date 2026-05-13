@@ -18,7 +18,7 @@ import { db } from '@/db';
 import { tasks } from '@/db/schema';
 import { Task } from '@/types/Task';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 export default function TasksScreen() {
     const router = useRouter();
@@ -69,14 +69,16 @@ export default function TasksScreen() {
     );
 
     const renderTask = ({ item }: { item: Task }) => (
-        <Swipeable renderRightActions={() => renderRightActions(item.id)} rightThreshold={80}>
-            <Pressable onPress={() => router.push(`/task/${item.id}`)} className="mb-3 px-4">
-                <Box className="rounded-3xl border border-gray-100 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+        <Box className="border-t border-gray-900">
+            <Swipeable renderRightActions={() => renderRightActions(item.id)} rightThreshold={80}>
+                <Pressable onPress={() => router.push(`/task/${item.id}`)} className="bg-white p-4">
                     <HStack className="items-start justify-between">
                         <HStack className="flex-1 items-start gap-3">
                             <Switch
-                                value={item.is_completed}
-                                onValueChange={() => toggleComplete(item.id, item.is_completed)}
+                                value={item.is_completed || false}
+                                onValueChange={() =>
+                                    toggleComplete(item.id, item.is_completed || false)
+                                }
                             />
                             <VStack className="flex-1">
                                 <Text
@@ -121,9 +123,9 @@ export default function TasksScreen() {
                             <Edit2 size={24} className="text-blue-600" />
                         </Pressable>
                     </HStack>
-                </Box>
-            </Pressable>
-        </Swipeable>
+                </Pressable>
+            </Swipeable>
+        </Box>
     );
 
     return (

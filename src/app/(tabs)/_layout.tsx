@@ -49,9 +49,9 @@ export default function TabLayout() {
             />
 
             <Tabs.Screen
-                name="about"
+                name="debug"
                 options={{
-                    title: 'About',
+                    title: 'Debug',
                     tabBarIcon: ({ color }) => <Search size={28} color={color} />,
                 }}
             />
