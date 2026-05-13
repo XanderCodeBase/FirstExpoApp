@@ -23,13 +23,9 @@ export default function SettingsScreen() {
                     </View>
 
                     <View>
-                        <Text className="text-lg font-semibold text-white">
-                            Change Password
-                        </Text>
+                        <Text className="text-lg font-semibold text-white">Change Password</Text>
 
-                        <Text className="text-sm text-slate-400">
-                            Update your account password
-                        </Text>
+                        <Text className="text-sm text-slate-400">Update your account password</Text>
                     </View>
                 </View>
 

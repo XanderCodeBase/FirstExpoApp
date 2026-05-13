@@ -36,19 +36,15 @@ export default function TabLayout() {
                 name="items"
                 options={{
                     title: 'Items',
-                    tabBarIcon: ({ color }) => (
-                        <LogInIcon size={28} color={color} />
-                    ),
+                    tabBarIcon: ({ color }) => <LogInIcon size={28} color={color} />,
                 }}
             />
 
             <Tabs.Screen
-                name="profile"
+                name="tasks"
                 options={{
-                    title: 'Profile',
-                    tabBarIcon: ({ color }) => (
-                        <Settings size={28} color={color} />
-                    ),
+                    title: 'Tasks',
+                    tabBarIcon: ({ color }) => <Settings size={28} color={color} />,
                 }}
             />
 
@@ -56,9 +52,7 @@ export default function TabLayout() {
                 name="about"
                 options={{
                     title: 'About',
-                    tabBarIcon: ({ color }) => (
-                        <Search size={28} color={color} />
-                    ),
+                    tabBarIcon: ({ color }) => <Search size={28} color={color} />,
                 }}
             />
 
@@ -66,9 +60,7 @@ export default function TabLayout() {
                 name="settings"
                 options={{
                     title: 'Settings',
-                    tabBarIcon: ({ color }) => (
-                        <Settings size={28} color={color} />
-                    ),
+                    tabBarIcon: ({ color }) => <Settings size={28} color={color} />,
                 }}
             />
         </Tabs>

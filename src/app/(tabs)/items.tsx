@@ -13,10 +13,7 @@ export default function HomeScreen() {
     const [loading, setLoading] = useState(true);
 
     const fetchItems = async () => {
-        const { data, error } = await supabase
-            .from('items')
-            .select('*')
-            .order('title');
+        const { data, error } = await supabase.from('items').select('*').order('title');
 
         if (error) console.error(error);
         else setItems(data || []);
@@ -46,9 +43,7 @@ export default function HomeScreen() {
                                 Item {item.title}
                             </Heading>
 
-                            <Text className="text-xl font-semibold">
-                                {item.description}
-                            </Text>
+                            <Text className="text-xl font-semibold">{item.description}</Text>
                         </Card>
                     </Pressable>
                 )}

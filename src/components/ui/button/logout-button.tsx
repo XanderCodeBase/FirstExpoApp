@@ -22,10 +22,7 @@ export function LogoutButton({
                         await signOut();
                         router.replace('/');
                     } catch (error) {
-                        Alert.alert(
-                            'Error',
-                            `Failed to logout. Please try again. ${error}`,
-                        );
+                        Alert.alert('Error', `Failed to logout. Please try again. ${error}`);
                     }
                 },
             },
@@ -40,9 +37,7 @@ export function LogoutButton({
             >
                 <View className="flex-row items-center gap-4">
                     <LogOut size={16} color="#ef4444" />
-                    <Text className="text-sm font-medium text-red-500">
-                        Logout
-                    </Text>
+                    <Text className="text-sm font-medium text-red-500">Logout</Text>
                 </View>
             </Pressable>
         );
@@ -59,20 +54,13 @@ export function LogoutButton({
         >
             <View className="flex-row items-center gap-4">
                 <View className="rounded-xl bg-red-500/20 p-3">
-                    <LogOut
-                        size={20}
-                        color={
-                            variant === 'destructive' ? '#ffffff' : '#ef4444'
-                        }
-                    />
+                    <LogOut size={20} color={variant === 'destructive' ? '#ffffff' : '#ef4444'} />
                 </View>
 
                 <View>
                     <Text
                         className={`text-lg font-semibold ${
-                            variant === 'destructive'
-                                ? 'text-white'
-                                : 'text-red-500'
+                            variant === 'destructive' ? 'text-white' : 'text-red-500'
                         }`}
                     >
                         Logout
@@ -80,9 +68,7 @@ export function LogoutButton({
 
                     <Text
                         className={`text-sm ${
-                            variant === 'destructive'
-                                ? 'text-red-100'
-                                : 'text-red-400'
+                            variant === 'destructive' ? 'text-red-100' : 'text-red-400'
                         }`}
                     >
                         Sign out of your account
@@ -90,10 +76,7 @@ export function LogoutButton({
                 </View>
             </View>
 
-            <ChevronRight
-                size={22}
-                color={variant === 'destructive' ? '#ffffff80' : '#f87171'}
-            />
+            <ChevronRight size={22} color={variant === 'destructive' ? '#ffffff80' : '#f87171'} />
         </Pressable>
     );
 }

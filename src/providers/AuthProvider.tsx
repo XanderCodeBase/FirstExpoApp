@@ -18,13 +18,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setLoading(false);
         });
 
-        const { data: listener } = supabase.auth.onAuthStateChange(
-            (_event, session) => {
-                setSession(session);
-                setUser(session?.user ?? null);
-                setLoading(false);
-            },
-        );
+        const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+            setSession(session);
+            setUser(session?.user ?? null);
+            setLoading(false);
+        });
 
         return () => listener.subscription.unsubscribe();
     }, []);
@@ -77,7 +75,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
-    if (context === undefined)
-        throw new Error('useAuth must be used within AuthProvider');
+    if (context === undefined) throw new Error('useAuth must be used within AuthProvider');
     return context;
 };

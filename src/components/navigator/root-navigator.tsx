@@ -1,9 +1,4 @@
-import {
-    Stack,
-    useRootNavigationState,
-    useRouter,
-    useSegments,
-} from 'expo-router';
+import { Stack, useRootNavigationState, useRouter, useSegments } from 'expo-router';
 import { useEffect } from 'react';
 
 import { useAuth } from '@/providers/AuthProvider';

@@ -35,11 +35,9 @@ export default function ChangePassword() {
         try {
             await changePassword(oldPassword, newPassword);
 
-            Alert.alert(
-                'Success',
-                'Your password has been updated successfully!',
-                [{ text: 'OK', onPress: () => router.back() }],
-            );
+            Alert.alert('Success', 'Your password has been updated successfully!', [
+                { text: 'OK', onPress: () => router.back() },
+            ]);
         } catch (error: any) {
             console.error(error);
             Alert.alert('Error', error.message || 'Failed to change password');
@@ -95,9 +93,7 @@ export default function ChangePassword() {
             </Pressable>
 
             <Pressable onPress={() => router.back()} className="py-3">
-                <Text className="text-center font-medium text-blue-400">
-                    Cancel
-                </Text>
+                <Text className="text-center font-medium text-blue-400">Cancel</Text>
             </Pressable>
         </ScrollView>
     );

@@ -15,9 +15,7 @@ export default function HomeScreen() {
 
                 <Link href="/items" asChild>
                     <Pressable className="rounded-xl bg-slate-700 px-5 py-2.5">
-                        <Text className="font-medium text-white">
-                            Go to Items
-                        </Text>
+                        <Text className="font-medium text-white">Go to Items</Text>
                     </Pressable>
                 </Link>
 

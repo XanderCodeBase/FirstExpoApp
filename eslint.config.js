@@ -1,17 +1,14 @@
-// eslint.config.ts   (or eslint.config.js)
-const { defineConfig } = require('eslint/config');
 const expoConfig = require('eslint-config-expo/flat');
-const simpleImportSort = require('eslint-plugin-simple-import-sort');
 
-module.exports = defineConfig([
-    expoConfig,
+module.exports = [
+    ...expoConfig,
     {
-        ignores: ['dist/*'],
-
+        ignores: ['dist/**', 'node_modules/**', 'src/drizzle/**', '.expo/**'],
+    },
+    {
         plugins: {
-            'simple-import-sort': simpleImportSort,
+            'simple-import-sort': require('eslint-plugin-simple-import-sort'),
         },
-
         settings: {
             'import/resolver': {
                 typescript: {
@@ -19,11 +16,10 @@ module.exports = defineConfig([
                 },
             },
         },
-
         rules: {
             'simple-import-sort/imports': 'error',
             'simple-import-sort/exports': 'error',
             'no-duplicate-imports': 'error',
         },
     },
-]);
+];

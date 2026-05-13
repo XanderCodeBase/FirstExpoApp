@@ -13,13 +13,7 @@ const Card = React.forwardRef<HTMLDivElement, ICardProps>(function Card(
     { className, size = 'default', ...props },
     ref,
 ) {
-    return (
-        <div
-            className={cardStyle({ size, class: className })}
-            {...props}
-            ref={ref}
-        />
-    );
+    return <div className={cardStyle({ size, class: className })} {...props} ref={ref} />;
 });
 
 Card.displayName = 'Card';

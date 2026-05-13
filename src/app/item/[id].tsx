@@ -16,11 +16,7 @@ export default function DetailScreen() {
 
     useEffect(() => {
         const fetchItem = async () => {
-            const { data, error } = await supabase
-                .from('items')
-                .select('*')
-                .eq('id', id)
-                .single();
+            const { data, error } = await supabase.from('items').select('*').eq('id', id).single();
 
             if (error) console.error(error);
             else setItem(data);
@@ -41,9 +37,7 @@ export default function DetailScreen() {
                     Item {item.title}
                 </Heading>
 
-                <Text className="text-xl font-semibold">
-                    {item.description}
-                </Text>
+                <Text className="text-xl font-semibold">{item.description}</Text>
 
                 <Button onPress={() => router.back()}>
                     <ButtonText>Do Something</ButtonText>

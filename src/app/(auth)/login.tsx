@@ -80,18 +80,11 @@ export default function Login() {
                 className="mb-6 rounded-2xl bg-blue-600 py-5 active:bg-blue-700"
             >
                 <Text className="text-center text-lg font-semibold text-white">
-                    {loading
-                        ? 'Processing...'
-                        : isLoginMode
-                          ? 'Sign In'
-                          : 'Create Account'}
+                    {loading ? 'Processing...' : isLoginMode ? 'Sign In' : 'Create Account'}
                 </Text>
             </Pressable>
 
-            <Pressable
-                onPress={() => setIsLoginMode(!isLoginMode)}
-                className="py-3"
-            >
+            <Pressable onPress={() => setIsLoginMode(!isLoginMode)} className="py-3">
                 <Text className="text-center font-medium text-blue-400">
                     {isLoginMode
                         ? "Don't have an account? Sign Up"

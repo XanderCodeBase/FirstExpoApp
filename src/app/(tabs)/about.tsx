@@ -11,8 +11,8 @@ export default function AboutScreen() {
             </Heading>
 
             <Text className="text-[17px] leading-7 text-slate-300">
-                This is a modern Expo app built with Supabase authentication,
-                protected routes, and NativeWind styling.
+                This is a modern Expo app built with Supabase authentication, protected routes, and
+                NativeWind styling.
             </Text>
         </ScrollView>
     );
