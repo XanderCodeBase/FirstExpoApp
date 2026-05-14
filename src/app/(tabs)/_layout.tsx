@@ -1,7 +1,7 @@
 import '@/styles/globals.css';
 
 import { Tabs } from 'expo-router';
-import { Home, LogInIcon, Search, Settings } from 'lucide-react-native';
+import { Bug, CalendarCheck, CalendarDays, Settings, SquarePlus } from 'lucide-react-native';
 
 export default function TabLayout() {
     return (
@@ -27,24 +27,24 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="index"
                 options={{
-                    title: 'Home',
-                    tabBarIcon: ({ color }) => <Home size={28} color={color} />,
-                }}
-            />
-
-            <Tabs.Screen
-                name="daily"
-                options={{
                     title: 'Daily',
-                    tabBarIcon: ({ color }) => <LogInIcon size={28} color={color} />,
+                    tabBarIcon: ({ color }) => <CalendarDays size={28} color={color} />,
                 }}
             />
 
             <Tabs.Screen
-                name="tasks"
+                name="planned"
                 options={{
-                    title: 'Tasks',
-                    tabBarIcon: ({ color }) => <Settings size={28} color={color} />,
+                    title: 'Planned',
+                    tabBarIcon: ({ color }) => <CalendarCheck size={28} color={color} />,
+                }}
+            />
+
+            <Tabs.Screen
+                name="new"
+                options={{
+                    title: 'New',
+                    tabBarIcon: ({ color }) => <SquarePlus size={28} color={color} />,
                 }}
             />
 
@@ -52,7 +52,7 @@ export default function TabLayout() {
                 name="debug"
                 options={{
                     title: 'Debug',
-                    tabBarIcon: ({ color }) => <Search size={28} color={color} />,
+                    tabBarIcon: ({ color }) => <Bug size={28} color={color} />,
                 }}
             />
 

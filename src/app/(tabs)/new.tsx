@@ -1,22 +1,14 @@
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRouter } from 'expo-router';
-import { ArrowLeft, Save } from 'lucide-react-native';
+import { Save } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { Alert, Platform, ScrollView } from 'react-native';
+import { Alert, ScrollView } from 'react-native';
 import { v4 as uuidv4 } from 'uuid';
 
+import DateTimePickerModal from '@/components/dateTime/DateTimePickerModal';
 import { Box } from '@/components/ui/box';
 import { Button } from '@/components/ui/button';
 import { HStack } from '@/components/ui/hstack';
 import { Input, InputField } from '@/components/ui/input';
-import {
-    Modal,
-    ModalBackdrop,
-    ModalBody,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-} from '@/components/ui/modal';
 import { Pressable } from '@/components/ui/pressable';
 import {
     Select,
@@ -114,11 +106,7 @@ export default function NewTaskScreen() {
 
     return (
         <Box className="flex-1 bg-gray-50 dark:bg-zinc-950">
-            {/* Header */}
             <HStack className="items-center justify-between border-b bg-white px-6 py-4 dark:bg-zinc-900">
-                <Pressable onPress={() => router.back()} className="p-2">
-                    <ArrowLeft size={28} />
-                </Pressable>
                 <Text className="text-2xl font-semibold">New Task</Text>
                 <Button onPress={handleSave} className="rounded-xl">
                     <Save color="white" size={24} />
@@ -216,37 +204,14 @@ export default function NewTaskScreen() {
             </ScrollView>
 
             {/* Date/Time Picker Modal */}
-            <Modal isOpen={showModal} onClose={handleCancel}>
-                <ModalBackdrop />
-                <ModalContent className="max-w-[380px]">
-                    <ModalHeader>
-                        <Text className="text-lg font-semibold">
-                            {currentField === 'start_date' ? 'Select Start' : 'Select Due'} Date &
-                            Time
-                        </Text>
-                    </ModalHeader>
-
-                    <ModalBody contentContainerClassName="py-6 items-center">
-                        {showModal && (
-                            <DateTimePicker
-                                value={tempDate}
-                                mode="datetime" // ← Combined mode
-                                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                                onChange={onDateChange}
-                            />
-                        )}
-                    </ModalBody>
-
-                    <ModalFooter className="gap-3">
-                        <Button variant="outline" onPress={handleCancel} className="flex-1">
-                            <Text>Cancel</Text>
-                        </Button>
-                        <Button onPress={handleConfirm} className="flex-1">
-                            <Text className="text-white">Confirm</Text>
-                        </Button>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
+            <DateTimePickerModal
+                open={showModal}
+                onClose={handleCancel}
+                currentField={currentField}
+                value={tempDate}
+                onChange={onDateChange}
+                onPress={handleConfirm}
+            />
         </Box>
     );
 }
