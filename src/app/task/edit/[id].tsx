@@ -82,7 +82,7 @@ export default function EditTaskScreen() {
 
     return (
         <Box className="flex-1 bg-gray-50 dark:bg-zinc-950">
-            <HStack className="items-center justify-between border-b bg-white px-6 pb-4 pt-12 dark:bg-zinc-900">
+            <HStack className="items-center justify-between border-b bg-white px-6 py-4 dark:bg-zinc-900">
                 <Pressable onPress={() => router.back()} className="p-2">
                     <ArrowLeft size={28} />
                 </Pressable>
