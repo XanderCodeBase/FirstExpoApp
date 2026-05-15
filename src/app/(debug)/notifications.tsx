@@ -1,6 +1,10 @@
+import { addSeconds } from 'date-fns';
 import * as Notifications from 'expo-notifications';
 import React, { useEffect, useState } from 'react';
 import { Alert, Button, RefreshControl, ScrollView, Text, View } from 'react-native';
+
+import { scheduleTaskNotification } from '@/services/notifications';
+import { Task } from '@/types/Task';
 
 export default function NotificationDebugScreen() {
     const [scheduled, setScheduled] = useState<any[]>([]);
@@ -36,6 +40,16 @@ export default function NotificationDebugScreen() {
         loadScheduledNotifications();
     };
 
+    const scheduledNotifications = async () => {
+        await scheduleTaskNotification({
+            id: 'fad1afcd-74c1-4899-8367-67bb816c03cc',
+            title: 'TITLE notification',
+            start_date: addSeconds(new Date(), 10).toISOString(),
+            description: 'DESCRIPTION Notification',
+        } as Task);
+        loadScheduledNotifications();
+    };
+
     return (
         <ScrollView
             style={{ flex: 1, padding: 16 }}
@@ -48,6 +62,7 @@ export default function NotificationDebugScreen() {
             </Text>
 
             <Button title="Refresh List" onPress={loadScheduledNotifications} />
+            <Button title="Schedule Notifications" onPress={scheduledNotifications} />
             <Button title="Cancel All Notifications" onPress={cancelAll} color="red" />
 
             {scheduled.length === 0 ? (
