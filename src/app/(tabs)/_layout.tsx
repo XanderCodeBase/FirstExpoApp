@@ -1,6 +1,6 @@
 import '@/styles/globals.css';
 
-import { Tabs } from 'expo-router';
+import { router, Tabs } from 'expo-router';
 import { Bug, CalendarCheck, CalendarDays, Settings, SquarePlus } from 'lucide-react-native';
 
 export default function TabLayout() {
@@ -49,18 +49,24 @@ export default function TabLayout() {
             />
 
             <Tabs.Screen
+                name="settings"
+                options={{
+                    title: 'Settings',
+                    tabBarIcon: ({ color }) => <Settings size={28} color={color} />,
+                }}
+            />
+
+            <Tabs.Screen
                 name="debug"
                 options={{
                     title: 'Debug',
                     tabBarIcon: ({ color }) => <Bug size={28} color={color} />,
                 }}
-            />
-
-            <Tabs.Screen
-                name="settings"
-                options={{
-                    title: 'Settings',
-                    tabBarIcon: ({ color }) => <Settings size={28} color={color} />,
+                listeners={{
+                    tabPress: (e) => {
+                        e.preventDefault();
+                        router.push('/(debug)/notifications');
+                    },
                 }}
             />
         </Tabs>

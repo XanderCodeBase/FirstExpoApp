@@ -33,3 +33,8 @@ After changes or upgrades:
 - npx expo install --fix # fixes versions to match your Expo SDK
 - npx expo-doctor # checks for issues
 - npx expo install --check
+
+Just regenerate native folders without full clean
+
+- npx expo prebuild
+- npx expo run:ios

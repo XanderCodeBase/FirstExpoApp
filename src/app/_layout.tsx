@@ -11,24 +11,30 @@ import {
 import RootNavigator from '@/components/navigator/root-navigator';
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import { DatabaseProvider } from '@/db';
+import { useNotificationHandling } from '@/hooks/useNotificationHandling';
 import { AuthProvider } from '@/providers/AuthProvider';
+import NotificationProvider from '@/providers/NotificationProvider';
 
 export default function RootLayout() {
+    useNotificationHandling();
+
     return (
-        <AuthProvider>
-            <DatabaseProvider>
-                <GluestackUIProvider mode="dark">
+        <NotificationProvider>
+            <AuthProvider>
+                <DatabaseProvider>
                     <GestureHandlerRootView style={{ flex: 1 }}>
-                        <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-                            <View className="flex-1 bg-slate-900">
-                                <SafeAreaView style={{ flex: 1 }}>
-                                    <RootNavigator />
-                                </SafeAreaView>
-                            </View>
-                        </SafeAreaProvider>
+                        <GluestackUIProvider mode="dark">
+                            <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+                                <View className="flex-1 bg-slate-900">
+                                    <SafeAreaView style={{ flex: 1 }}>
+                                        <RootNavigator />
+                                    </SafeAreaView>
+                                </View>
+                            </SafeAreaProvider>
+                        </GluestackUIProvider>
                     </GestureHandlerRootView>
-                </GluestackUIProvider>
-            </DatabaseProvider>
-        </AuthProvider>
+                </DatabaseProvider>
+            </AuthProvider>
+        </NotificationProvider>
     );
 }
