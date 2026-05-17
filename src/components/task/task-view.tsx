@@ -1,4 +1,3 @@
-import { eq } from 'drizzle-orm';
 import { router } from 'expo-router';
 import { Calendar, Edit2, Flag, Trash2 } from 'lucide-react-native';
 import React, { useRef } from 'react';
@@ -12,17 +11,12 @@ import { Pressable } from '@/components/ui/pressable';
 import { Switch } from '@/components/ui/switch';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
-import { db } from '@/db';
-import { tasks } from '@/db/schema';
-import { Task } from '@/types/Task';
+import { useDeleteTaskOccurrence, useToggleTaskCompletion } from '@/db/hooks/useTasks';
+import { TaskWithOccurrence } from '@/db/types';
 
-export default function TaskView({ task }: { task: Task }) {
-    const toggleComplete = async () => {
-        await db
-            .update(tasks)
-            .set({ is_completed: !task.is_completed, updated_at: new Date().toISOString() })
-            .where(eq(tasks.id, task.id));
-    };
+export default function TaskView({ task }: { task: TaskWithOccurrence }) {
+    const deleteMutation = useDeleteTaskOccurrence();
+    const completeMutation = useToggleTaskCompletion();
 
     const heightAnim = useRef(new Animated.Value(72)).current;
     const opacityAnim = useRef(new Animated.Value(1)).current;
@@ -46,7 +40,7 @@ export default function TaskView({ task }: { task: Task }) {
                 useNativeDriver: false,
             }),
         ]).start(async () => {
-            await db.delete(tasks).where(eq(tasks.id, task.id));
+            deleteMutation.mutate(task.occurrenceId);
         });
     };
 
@@ -74,18 +68,20 @@ export default function TaskView({ task }: { task: Task }) {
                     onSwipeableOpen={(direction) => direction === 'left' && deleteTask()}
                 >
                     <Pressable
-                        onPress={() => router.push(`/task/${task.id}`)}
+                        onPress={() => router.push(`/task/${task.occurrenceId}`)}
                         className="bg-white p-4"
                     >
                         <HStack className="items-start justify-between">
                             <HStack className="flex-1 items-start gap-3">
                                 <Switch
-                                    value={task.is_completed || false}
-                                    onValueChange={toggleComplete}
+                                    value={task.isCompleted}
+                                    onValueChange={() => {
+                                        completeMutation.mutate(task);
+                                    }}
                                 />
                                 <VStack className="flex-1">
                                     <Text
-                                        className={`text-lg font-semibold ${task.is_completed ? 'text-gray-400 line-through' : 'text-gray-900 dark:text-white'}`}
+                                        className={`text-lg font-semibold ${task.isCompleted ? 'text-gray-400 line-through' : 'text-gray-900 dark:text-white'}`}
                                     >
                                         {task.title}
                                     </Text>
@@ -98,21 +94,23 @@ export default function TaskView({ task }: { task: Task }) {
                                         </Text>
                                     )}
                                     <HStack className="mt-3 flex-wrap gap-2">
-                                        {task.due_date && (
+                                        {task.occurrenceDate && (
                                             <Badge
                                                 variant="outline"
                                                 className="flex-row items-center gap-1"
                                             >
                                                 <Calendar size={16} />
                                                 <Text className="text-xs">
-                                                    {new Date(task.due_date).toLocaleDateString()}
+                                                    {new Date(
+                                                        task.occurrenceDate,
+                                                    ).toLocaleDateString()}
                                                 </Text>
                                             </Badge>
                                         )}
-                                        {task.life_domains && (
+                                        {task.lifeDomains && (
                                             <Badge className="flex-row items-center gap-1">
                                                 <Flag size={16} />
-                                                <Text className="text-xs">{task.life_domains}</Text>
+                                                <Text className="text-xs">{task.lifeDomains}</Text>
                                             </Badge>
                                         )}
                                     </HStack>
@@ -120,7 +118,7 @@ export default function TaskView({ task }: { task: Task }) {
                             </HStack>
 
                             <Pressable
-                                onPress={() => router.push(`/task/edit/${task.id}`)}
+                                onPress={() => router.push(`/task/edit/${task.occurrenceId}`)}
                                 className="p-2"
                             >
                                 <Edit2 size={24} className="text-blue-600" />

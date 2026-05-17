@@ -1,7 +1,5 @@
 import { FlashList } from '@shopify/flash-list';
-import { addDays, endOfDay, format, isToday, startOfDay, subDays } from 'date-fns';
-import { and, gte, lte } from 'drizzle-orm';
-import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
+import { addDays, format, isToday, subDays } from 'date-fns';
 import { ArrowLeft, ArrowRight } from 'lucide-react-native';
 import React, { useState } from 'react';
 
@@ -11,29 +9,18 @@ import { HStack } from '@/components/ui/hstack';
 import { Pressable } from '@/components/ui/pressable';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
-import { db } from '@/db';
-import { tasks } from '@/db/schema';
+import { useTasksForDate } from '@/db/hooks/useTasks';
 
 export default function DailyOverviewScreen() {
-    const [currentDate, setCurrentDate] = useState(new Date());
-    const dayStart = startOfDay(currentDate).toISOString();
-    const dayEnd = endOfDay(currentDate).toISOString();
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const { data: tasks = [] } = useTasksForDate(selectedDate); // isLoading, refetch
 
-    const { data: taskList = [] } = useLiveQuery(
-        db
-            .select()
-            .from(tasks)
-            .where(and(gte(tasks.start_date, dayStart), lte(tasks.start_date, dayEnd)))
-            .orderBy(tasks.start_date),
-        [dayStart, dayEnd],
-    );
+    const goToPreviousDay = () => setSelectedDate(subDays(selectedDate, 1));
+    const goToNextDay = () => setSelectedDate(addDays(selectedDate, 1));
+    const goToToday = () => setSelectedDate(new Date());
 
-    const goToPreviousDay = () => setCurrentDate(subDays(currentDate, 1));
-    const goToNextDay = () => setCurrentDate(addDays(currentDate, 1));
-    const goToToday = () => setCurrentDate(new Date());
-
-    const displayDate = format(currentDate, 'EEEE, MMMM d, yyyy');
-    const isTodayDate = isToday(currentDate);
+    const displayDate = format(selectedDate, 'EEEE, MMMM d, yyyy');
+    const isTodayDate = isToday(selectedDate);
 
     return (
         <Box className="flex-1 bg-gray-50 dark:bg-zinc-950">
@@ -44,7 +31,7 @@ export default function DailyOverviewScreen() {
 
                 <VStack className="items-center">
                     <Text className="text-xl font-semibold">
-                        {isTodayDate ? 'Today' : displayDate} ({taskList.length})
+                        {isTodayDate ? 'Today' : displayDate} ({tasks.length})
                     </Text>
                     {!isTodayDate && (
                         <Pressable onPress={goToToday}>
@@ -59,8 +46,8 @@ export default function DailyOverviewScreen() {
             </HStack>
 
             <FlashList
-                data={taskList}
-                keyExtractor={(item) => item.id}
+                data={tasks}
+                keyExtractor={(item) => item.occurrenceId}
                 renderItem={({ item }) => <TaskView task={item} />}
                 ListEmptyComponent={
                     <Box className="items-center justify-center py-20">

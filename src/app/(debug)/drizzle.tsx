@@ -3,77 +3,120 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { v4 as uuidv4 } from 'uuid';
 
 import { db } from '@/db';
-import { tasks } from '@/db/schema';
+import { recurrenceRules, taskOccurrences, tasks } from '@/db/schema';
 
 const seed = async () => {
-    const values = Array.from({ length: 20 }, (_, i) => ({
+    const values = Array.from({ length: 10 }, (_, i) => ({
         id: uuidv4(),
-        title: `Task ${i + 1}`,
-        description: `Seeded task ${i + 1}`,
-        is_completed: false,
-        due_date: new Date().toISOString(),
-        start_date: new Date().toISOString(),
-        life_domains: 'seed',
-        priority: 1,
+        title: `Debug Task ${i + 1}`,
+        description: `This is a seeded debug task ${i + 1}`,
+        start_date: new Date(Date.now() - i * 86400000).toISOString(),
+        life_domains: 'health',
+        priority: Math.floor(Math.random() * 4),
         position: i,
-        user_id: 'local-user',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
     }));
 
     await db.insert(tasks).values(values);
+    console.log('✅ Seeded 10 tasks');
 };
 
 export default function DebugDB() {
-    const [usersData, setUsersData] = useState<any[]>([]);
+    const [data, setData] = useState({
+        tasks: [] as any[],
+        recurrenceRules: [] as any[],
+        taskOccurrences: [] as any[],
+    });
+
     const [loading, setLoading] = useState(false);
 
-    const loadData = useCallback(async () => {
+    const loadAllData = useCallback(async () => {
         try {
             setLoading(true);
 
-            const result = await db.select().from(tasks);
+            const [tasksData, rulesData, occurrencesData] = await Promise.all([
+                db.select().from(tasks).orderBy(tasks.created_at),
+                db.select().from(recurrenceRules),
+                db.select().from(taskOccurrences).orderBy(taskOccurrences.occurrence_date),
+            ]);
 
-            setUsersData(result);
+            setData({
+                tasks: tasksData,
+                recurrenceRules: rulesData,
+                taskOccurrences: occurrencesData,
+            });
+
+            console.log(
+                `Loaded: ${tasksData.length} tasks, ${rulesData.length} rules, ${occurrencesData.length} occurrences`,
+            );
         } catch (err) {
-            console.log('DB Debug Error:', err);
+            console.error('DB Debug Error:', err);
         } finally {
             setLoading(false);
         }
     }, []);
 
     useEffect(() => {
-        loadData();
-    }, [loadData]);
+        loadAllData();
+    }, [loadAllData]);
 
-    // console.log(JSON.stringify(usersData));
+    const clearAll = async () => {
+        await Promise.all([
+            db.delete(taskOccurrences),
+            db.delete(recurrenceRules),
+            db.delete(tasks),
+        ]);
+        console.log('🗑️ All tables cleared');
+        loadAllData();
+    };
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.title}>🛠 Database Debug</Text>
 
-            <Pressable style={styles.button} onPress={seed}>
-                <Text style={styles.buttonText}>Seed 20 Tasks</Text>
-            </Pressable>
+            <View style={styles.buttonRow}>
+                <Pressable style={styles.button} onPress={seed}>
+                    <Text style={styles.buttonText}>Seed Tasks</Text>
+                </Pressable>
 
-            <Pressable
-                style={styles.button}
-                onPress={async () => {
-                    await db.delete(tasks);
-                    console.log('Tasks cleared');
-                }}
-            >
-                <Text style={styles.buttonText}>Clear Tasks</Text>
-            </Pressable>
+                <Pressable
+                    style={[styles.button, { backgroundColor: '#ef4444' }]}
+                    onPress={clearAll}
+                >
+                    <Text style={styles.buttonText}>Clear All</Text>
+                </Pressable>
 
-            <Pressable style={styles.button} onPress={loadData}>
-                <Text style={styles.buttonText}>{loading ? 'Refreshing...' : 'Refresh Data'}</Text>
-            </Pressable>
+                <Pressable style={styles.button} onPress={loadAllData}>
+                    <Text style={styles.buttonText}>{loading ? 'Refreshing...' : 'Refresh'}</Text>
+                </Pressable>
+            </View>
 
+            {/* Tasks Table */}
             <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Users Table</Text>
-                <Text style={styles.count}>Rows: {usersData.length}</Text>
-
+                <Text style={styles.sectionTitle}>📋 Tasks ({data.tasks.length})</Text>
                 <View style={styles.box}>
-                    <Text style={styles.json}>{JSON.stringify(usersData, null, 2)}</Text>
+                    <Text style={styles.json}>{JSON.stringify(data.tasks, null, 2)}</Text>
+                </View>
+            </View>
+
+            {/* Recurrence Rules */}
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>
+                    🔄 Recurrence Rules ({data.recurrenceRules.length})
+                </Text>
+                <View style={styles.box}>
+                    <Text style={styles.json}>{JSON.stringify(data.recurrenceRules, null, 2)}</Text>
+                </View>
+            </View>
+
+            {/* Task Occurrences */}
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>
+                    📅 Task Occurrences ({data.taskOccurrences.length})
+                </Text>
+                <View style={styles.box}>
+                    <Text style={styles.json}>{JSON.stringify(data.taskOccurrences, null, 2)}</Text>
                 </View>
             </View>
         </ScrollView>
@@ -83,47 +126,52 @@ export default function DebugDB() {
 const styles = StyleSheet.create({
     container: {
         padding: 16,
-        paddingBottom: 80,
+        paddingBottom: 100,
         backgroundColor: '#0b0b0b',
         flexGrow: 1,
     },
     title: {
-        fontSize: 22,
+        fontSize: 24,
         fontWeight: '700',
         color: 'white',
-        marginBottom: 16,
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+    buttonRow: {
+        flexDirection: 'row',
+        gap: 10,
+        marginBottom: 24,
     },
     button: {
+        flex: 1,
         backgroundColor: '#2563eb',
-        padding: 12,
-        borderRadius: 8,
-        marginBottom: 20,
+        padding: 14,
+        borderRadius: 10,
+        alignItems: 'center',
     },
     buttonText: {
         color: 'white',
-        textAlign: 'center',
         fontWeight: '600',
     },
     section: {
-        marginBottom: 24,
+        marginBottom: 28,
     },
     sectionTitle: {
         fontSize: 18,
         fontWeight: '600',
-        color: 'white',
-        marginBottom: 6,
-    },
-    count: {
-        color: '#a1a1aa',
-        marginBottom: 10,
+        color: '#a5b4fc',
+        marginBottom: 8,
     },
     box: {
-        backgroundColor: '#111827',
+        backgroundColor: '#1f2937',
         padding: 12,
-        borderRadius: 8,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#374151',
     },
     json: {
-        color: '#d1d5db',
-        fontSize: 12,
+        color: '#e0f2fe',
+        fontSize: 11,
+        fontFamily: 'monospace',
     },
 });

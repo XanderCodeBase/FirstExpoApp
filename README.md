@@ -36,5 +36,8 @@ After changes or upgrades:
 
 Just regenerate native folders without full clean
 
+- rm -rf src/drizzle
+- npx drizzle-kit generate
 - npx expo prebuild
 - npx expo run:ios
+- npx expo start -c 

@@ -1,8 +1,7 @@
 import { useRouter } from 'expo-router';
 import { Save } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { Alert, ScrollView } from 'react-native';
-import { v4 as uuidv4 } from 'uuid';
+import { Alert, ScrollView, View } from 'react-native';
 
 import DateTimePickerModal from '@/components/dateTime/DateTimePickerModal';
 import { Box } from '@/components/ui/box';
@@ -14,8 +13,6 @@ import {
     Select,
     SelectBackdrop,
     SelectContent,
-    SelectDragIndicator,
-    SelectDragIndicatorWrapper,
     SelectInput,
     SelectItem,
     SelectPortal,
@@ -24,59 +21,69 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
-import { db } from '@/db';
-import { tasks } from '@/db/schema';
+import { useCreateTask } from '@/db/hooks/useTasks';
 import { life_domains, LifeDomainKeys } from '@/types/life_domains';
+
+type FrequencyType = 'daily' | 'weekly' | 'monthly' | 'yearly';
 
 export default function NewTaskScreen() {
     const router = useRouter();
+    const createMutation = useCreateTask();
 
     const [form, setForm] = useState({
         title: '',
         description: '',
-        is_completed: false,
-        due_date: '' as string,
         start_date: '' as string,
+        due_date: '' as string,
         life_domains: '',
         priority: 0,
+
+        // Recurrence
+        is_recurring: false,
+        frequency: 'daily' as FrequencyType,
+        interval: 1,
+        days_of_week: [] as number[], // 1=Mon, 2=Tue...
+        time_of_day: '12:00:00',
+        end_date: '' as string,
     });
 
     const [showModal, setShowModal] = useState(false);
-    const [currentField, setCurrentField] = useState<'due_date' | 'start_date' | null>(null);
+    const [currentField, setCurrentField] = useState<'start_date' | 'due_date' | 'end_date' | null>(
+        null,
+    );
     const [tempDate, setTempDate] = useState(new Date());
 
-    const openPicker = (field: 'due_date' | 'start_date') => {
+    const openPicker = (field: 'start_date' | 'due_date' | 'end_date') => {
         setCurrentField(field);
         setTempDate(form[field] ? new Date(form[field]) : new Date());
         setShowModal(true);
     };
 
-    const onDateChange = (event: any, selectedDate?: Date) => {
-        if (selectedDate) setTempDate(selectedDate);
-    };
-
     const handleConfirm = () => {
         if (currentField) {
-            setForm((prev) => ({
-                ...prev,
-                [currentField]: tempDate.toISOString(),
-            }));
+            setForm((prev) => ({ ...prev, [currentField]: tempDate.toISOString() }));
         }
         setShowModal(false);
     };
 
-    const handleCancel = () => setShowModal(false);
+    const formatDisplay = (isoString: string) =>
+        isoString
+            ? new Date(isoString).toLocaleString('en-US', {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: '2-digit',
+              })
+            : 'Not set';
 
-    const formatDisplay = (isoString: string) => {
-        if (!isoString) return 'Not set';
-        return new Date(isoString).toLocaleString('en-US', {
-            weekday: 'short',
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-            hour: 'numeric',
-            minute: '2-digit',
-        });
+    const toggleDayOfWeek = (day: number) => {
+        setForm((prev) => ({
+            ...prev,
+            days_of_week: prev.days_of_week.includes(day)
+                ? prev.days_of_week.filter((d) => d !== day)
+                : [...prev.days_of_week, day].sort((a, b) => a - b),
+        }));
     };
 
     const handleSave = async () => {
@@ -85,23 +92,28 @@ export default function NewTaskScreen() {
             return;
         }
 
-        await db.insert(tasks).values({
-            id: uuidv4(),
-            title: form.title.trim(),
-            description: form.description.trim() || null,
-            is_completed: form.is_completed,
-            due_date: form.due_date || null,
-            start_date: form.start_date || null,
-            life_domains: form.life_domains || null,
-            priority: form.priority,
-            position: Date.now(),
-            user_id: 'local-user',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-        });
-
-        Alert.alert('Success', 'Task created successfully');
-        router.back();
+        createMutation.mutate(
+            {
+                title: form.title,
+                description: form.description,
+                start_date: form.start_date,
+                due_date: form.due_date,
+                life_domains: form.life_domains,
+                priority: form.priority,
+                is_recurring: form.is_recurring,
+                frequency: form.frequency,
+                interval: form.interval,
+                days_of_week: form.days_of_week,
+                time_of_day: form.time_of_day,
+                end_date: form.end_date,
+            },
+            {
+                onSuccess: (taskId) => {
+                    Alert.alert('Success', 'Task created successfully!', taskId);
+                    router.back();
+                },
+            },
+        );
     };
 
     return (
@@ -116,48 +128,43 @@ export default function NewTaskScreen() {
 
             <ScrollView className="flex-1 p-6">
                 <VStack space="lg">
+                    {/* Title & Description */}
                     <VStack>
-                        <Text className="text-typography-700 mb-1.5 font-medium">Title *</Text>
+                        <Text className="mb-1.5 font-medium">Title *</Text>
                         <Input>
                             <InputField
-                                placeholder="What needs to be done?"
                                 value={form.title}
-                                onChangeText={(text) => setForm({ ...form, title: text })}
+                                onChangeText={(t) => setForm({ ...form, title: t })}
+                                placeholder="Task title"
                             />
                         </Input>
                     </VStack>
 
                     <VStack>
-                        <Text className="text-typography-700 mb-1.5 font-medium">Description</Text>
+                        <Text className="mb-1.5 font-medium">Description</Text>
                         <Input>
                             <InputField
-                                placeholder="Add more details..."
-                                value={form.description}
-                                onChangeText={(text) => setForm({ ...form, description: text })}
                                 multiline
                                 numberOfLines={4}
-                                className="min-h-[110px]"
+                                value={form.description}
+                                onChangeText={(t) => setForm({ ...form, description: t })}
                             />
                         </Input>
                     </VStack>
 
+                    {/* Life Domain */}
                     <VStack>
-                        <Text className="text-typography-700 mb-1.5 font-medium">Life Domain</Text>
-                        <Select
-                            onValueChange={(value) => setForm({ ...form, life_domains: value })}
-                        >
+                        <Text className="mb-1.5 font-medium">Life Domain</Text>
+                        <Select onValueChange={(v) => setForm({ ...form, life_domains: v })}>
                             <SelectTrigger>
                                 <SelectInput
-                                    placeholder="Select a domain"
+                                    placeholder="Select domain"
                                     value={form.life_domains}
                                 />
                             </SelectTrigger>
                             <SelectPortal>
                                 <SelectBackdrop />
                                 <SelectContent>
-                                    <SelectDragIndicatorWrapper>
-                                        <SelectDragIndicator />
-                                    </SelectDragIndicatorWrapper>
                                     {Object.entries(life_domains).map(([key, label]) => (
                                         <SelectItem
                                             key={key}
@@ -170,10 +177,127 @@ export default function NewTaskScreen() {
                         </Select>
                     </VStack>
 
-                    {/* Start */}
+                    {/* Recurrence Section */}
+                    <HStack className="items-center justify-between py-3">
+                        <Text className="font-medium">Repeat task</Text>
+                        <Switch
+                            value={form.is_recurring}
+                            onValueChange={(v) => setForm({ ...form, is_recurring: v })}
+                        />
+                    </HStack>
+
+                    {form.is_recurring && (
+                        <VStack space="md" className="ml-1 border-l-2 border-blue-500 pl-4">
+                            <VStack>
+                                <Text className="text-typography-700 mb-1.5 font-medium">
+                                    Frequency
+                                </Text>
+                                <Select
+                                    onValueChange={(value: FrequencyType) =>
+                                        setForm({ ...form, frequency: value })
+                                    }
+                                >
+                                    <SelectTrigger>
+                                        <SelectInput value={form.frequency} />
+                                    </SelectTrigger>
+                                    <SelectPortal>
+                                        <SelectBackdrop />
+                                        <SelectContent>
+                                            <SelectItem value="daily" label="Daily" />
+                                            <SelectItem value="weekly" label="Weekly" />
+                                            <SelectItem value="monthly" label="Monthly" />
+                                            <SelectItem value="yearly" label="Yearly" />
+                                        </SelectContent>
+                                    </SelectPortal>
+                                </Select>
+                            </VStack>
+
+                            <VStack>
+                                <Text className="text-typography-700 mb-1.5 font-medium">
+                                    Every
+                                </Text>
+                                <Input>
+                                    <InputField
+                                        keyboardType="numeric"
+                                        value={form.interval.toString()}
+                                        onChangeText={(text) =>
+                                            setForm({ ...form, interval: parseInt(text) || 1 })
+                                        }
+                                    />
+                                </Input>
+                            </VStack>
+
+                            {/* Weekly Days */}
+                            {form.frequency === 'weekly' && (
+                                <VStack>
+                                    <Text className="text-typography-700 mb-2 font-medium">
+                                        On these days
+                                    </Text>
+                                    <View className="flex-row flex-wrap gap-2">
+                                        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(
+                                            (day, index) => {
+                                                const dayNum = index + 1;
+                                                const isSelected =
+                                                    form.days_of_week.includes(dayNum);
+                                                return (
+                                                    <Pressable
+                                                        key={day}
+                                                        onPress={() => toggleDayOfWeek(dayNum)}
+                                                        className={`rounded-full border px-4 py-2 ${
+                                                            isSelected
+                                                                ? 'border-blue-600 bg-blue-600'
+                                                                : 'border-gray-300'
+                                                        }`}
+                                                    >
+                                                        <Text
+                                                            className={
+                                                                isSelected ? 'text-white' : ''
+                                                            }
+                                                        >
+                                                            {day}
+                                                        </Text>
+                                                    </Pressable>
+                                                );
+                                            },
+                                        )}
+                                    </View>
+                                </VStack>
+                            )}
+
+                            {/* Time of Day */}
+                            <VStack>
+                                <Text className="text-typography-700 mb-1.5 font-medium">
+                                    Time of day
+                                </Text>
+                                <Pressable onPress={() => openPicker('start_date')}>
+                                    {/* Reuse for time */}
+                                    <Input pointerEvents="none">
+                                        <InputField value={form.time_of_day} editable={false} />
+                                    </Input>
+                                </Pressable>
+                            </VStack>
+
+                            {/* End Date */}
+                            <VStack>
+                                <Text className="text-typography-700 mb-1.5 font-medium">
+                                    End date (optional)
+                                </Text>
+                                <Pressable onPress={() => openPicker('end_date')}>
+                                    <Input pointerEvents="none">
+                                        <InputField
+                                            value={formatDisplay(form.end_date)}
+                                            editable={false}
+                                        />
+                                    </Input>
+                                </Pressable>
+                            </VStack>
+                        </VStack>
+                    )}
+
+                    {/* Start & Due Date */}
                     <VStack>
-                        <Text className="text-typography-700 mb-1.5 font-medium">Start</Text>
-                        <Pressable className="flex-1" onPress={() => openPicker('start_date')}>
+                        <Text className="mb-1.5 font-medium">Start Date</Text>
+                        <Pressable onPress={() => openPicker('start_date')}>
                             <Input pointerEvents="none">
                                 <InputField
                                     value={formatDisplay(form.start_date)}
@@ -183,33 +307,23 @@ export default function NewTaskScreen() {
                         </Pressable>
                     </VStack>
 
-                    {/* Due */}
                     <VStack>
-                        <Text className="text-typography-700 mb-1.5 font-medium">Due</Text>
-                        <Pressable className="flex-1" onPress={() => openPicker('due_date')}>
+                        <Text className="mb-1.5 font-medium">Due Date</Text>
+                        <Pressable onPress={() => openPicker('due_date')}>
                             <Input pointerEvents="none">
                                 <InputField value={formatDisplay(form.due_date)} editable={false} />
                             </Input>
                         </Pressable>
                     </VStack>
-
-                    <HStack className="items-center justify-between py-3">
-                        <Text className="font-medium">Mark as completed</Text>
-                        <Switch
-                            value={form.is_completed}
-                            onValueChange={(val) => setForm({ ...form, is_completed: val })}
-                        />
-                    </HStack>
                 </VStack>
             </ScrollView>
 
-            {/* Date/Time Picker Modal */}
             <DateTimePickerModal
                 open={showModal}
-                onClose={handleCancel}
+                onClose={() => setShowModal(false)}
                 currentField={currentField}
                 value={tempDate}
-                onChange={onDateChange}
+                onChange={(e, date) => date && setTempDate(date)}
                 onPress={handleConfirm}
             />
         </Box>

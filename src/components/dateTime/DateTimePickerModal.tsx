@@ -16,7 +16,7 @@ import { Text } from '@/components/ui/text';
 export default function DateTimePickerModal(props: {
     open: boolean;
     onClose: () => void;
-    currentField: 'due_date' | 'start_date' | null;
+    currentField: 'due_date' | 'start_date' | 'end_date' | null;
     value: Date;
     onChange: (event: any, selectedDate?: Date) => void;
     onPress: () => void;
@@ -38,6 +38,7 @@ export default function DateTimePickerModal(props: {
                             value={props.value}
                             mode="datetime" // ← Combined mode
                             display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                            minuteInterval={15}
                             onChange={props.onChange}
                         />
                     )}

@@ -1,29 +1,24 @@
 import { FlashList } from '@shopify/flash-list';
-import { desc } from 'drizzle-orm';
-import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import React from 'react';
 
 import TaskView from '@/components/task/task-view';
 import { Box } from '@/components/ui/box';
 import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
-import { db } from '@/db';
-import { tasks } from '@/db/schema';
+import { useAllTasks } from '@/db/hooks/useTasks';
 
 export default function PlannedOverviewScreen() {
-    const { data: taskList = [] } = useLiveQuery(
-        db.select().from(tasks).orderBy(desc(tasks.start_date)),
-    );
+    const { data: tasks = [] } = useAllTasks(); // isLoading, refetch
 
     return (
         <Box className="flex-1 bg-gray-50 dark:bg-zinc-950">
             <HStack className="items-center justify-between border-b bg-white px-6 py-4 dark:bg-zinc-900">
-                <Text className="text-xl font-semibold">Planned ({taskList.length})</Text>
+                <Text className="text-xl font-semibold">Planned ({tasks.length})</Text>
             </HStack>
 
             <FlashList
-                data={taskList}
-                keyExtractor={(item) => item.id}
+                data={tasks}
+                keyExtractor={(item) => item.occurrenceId}
                 renderItem={({ item }) => <TaskView task={item} />}
                 ListEmptyComponent={
                     <Box className="items-center justify-center py-20">

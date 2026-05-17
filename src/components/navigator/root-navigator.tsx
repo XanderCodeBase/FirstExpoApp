@@ -28,7 +28,6 @@ export default function RootNavigator() {
         <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="(auth)/login" />
-            <Stack.Screen name="item/[id]" />
             <Stack.Screen name="settings/change-password" />
             <Stack.Screen name="(debug)" options={{ presentation: 'modal' }} />
         </Stack>

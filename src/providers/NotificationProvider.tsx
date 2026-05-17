@@ -1,5 +1,5 @@
 import * as Notifications from 'expo-notifications';
-import { useEffect } from 'react';
+import { ReactNode, useEffect } from 'react';
 
 import { registerBackgroundTask } from '@/services/backgroundTask';
 import { rescheduleAllNotifications } from '@/services/notifications';
@@ -13,7 +13,7 @@ Notifications.setNotificationHandler({
     }),
 });
 
-export default function NotificationProvider({ children }: { children: React.ReactNode }) {
+export default function NotificationProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         initializeNotifications();
     }, []);

@@ -1,69 +1,141 @@
-import { and, eq, gte } from 'drizzle-orm';
+import { addDays } from 'date-fns';
+import { and, eq, gte, lte } from 'drizzle-orm';
 import * as Notifications from 'expo-notifications';
 
 import { db } from '@/db';
-import { tasks } from '@/db/schema';
-import { Task } from '@/types/Task';
+import { recurrenceRules, taskOccurrences, tasks } from '@/db/schema';
+import { TaskWithOccurrence } from '@/db/types';
 
-export async function scheduleTaskNotification(task: Task) {
-    // Cancel previous notification for this task
-    await cancelTaskNotification(task.id);
+// Cancel notification for a specific occurrence
+export async function cancelTaskNotification(occurrenceId: string) {
+    try {
+        await Notifications.cancelScheduledNotificationAsync(occurrenceId);
+    } catch (e) {
+        console.log('Failed to cancel notification:', e);
+    }
+}
 
-    const start = new Date(task.start_date || '');
+// Cancel all notifications
+export async function cancelAllNotifications() {
+    try {
+        await Notifications.cancelAllScheduledNotificationsAsync();
+    } catch (e) {
+        console.error('Failed to cancel all notifications:', e);
+    }
+}
+
+// Fetch upcoming tasks with proper joins (matches TaskWithOccurrence)
+export async function fetchUpcomingTasksFromDB(
+    daysAhead: number = 7,
+): Promise<TaskWithOccurrence[]> {
+    const now = new Date().toISOString();
+    const futureDate = addDays(new Date(), daysAhead).toISOString();
+
+    const raw = await db
+        .select({
+            occurrenceId: taskOccurrences.id,
+            taskId: tasks.id,
+            title: tasks.title,
+            description: tasks.description,
+            occurrenceDate: taskOccurrences.occurrence_date,
+            isCompleted: taskOccurrences.is_completed,
+            completedAt: taskOccurrences.completed_at,
+            priority: tasks.priority,
+            notes: taskOccurrences.notes,
+            customTitle: taskOccurrences.custom_title,
+            customTime: taskOccurrences.custom_time,
+            isRecurringRaw: recurrenceRules.id,
+        })
+        .from(taskOccurrences)
+        .innerJoin(tasks, eq(taskOccurrences.task_id, tasks.id))
+        .leftJoin(recurrenceRules, eq(tasks.id, recurrenceRules.task_id))
+        .where(
+            and(
+                gte(taskOccurrences.occurrence_date, now),
+                lte(taskOccurrences.occurrence_date, futureDate),
+                eq(taskOccurrences.is_completed, false),
+            ),
+        )
+        .orderBy(taskOccurrences.occurrence_date);
+
+    return raw.map((item) => ({
+        ...item,
+        isCompleted: !!item.isCompleted,
+        isRecurring: !!item.isRecurringRaw,
+    }));
+}
+
+// Schedule notification for a single task occurrence
+export async function scheduleTaskNotification(task: TaskWithOccurrence) {
+    // Cancel any existing notification for this occurrence
+    await cancelTaskNotification(task.occurrenceId);
+
+    const triggerDate = new Date(task.occurrenceDate);
     const now = new Date();
 
-    if (start <= now) {
-        // Immediate notification
-        await Notifications.scheduleNotificationAsync({
-            identifier: task.id,
-            content: {
-                title: 'Task Started! 🚀',
-                body: task.title,
-                data: { taskId: task.id, screen: 'task-detail' },
-            },
-            trigger: null, // immediate
-        });
-        return;
+    const title = task.customTitle || task.title;
+    const body = task.notes ? `${title} - ${task.notes}` : title;
+
+    try {
+        if (triggerDate <= now) {
+            // Immediate notification
+            await Notifications.scheduleNotificationAsync({
+                identifier: task.occurrenceId,
+                content: {
+                    title: '🔔 Task Reminder',
+                    body: body,
+                    data: {
+                        taskId: task.taskId,
+                        occurrenceId: task.occurrenceId,
+                        screen: 'task-detail',
+                    },
+                },
+                trigger: null,
+            });
+        } else {
+            // Scheduled notification
+            await Notifications.scheduleNotificationAsync({
+                identifier: task.occurrenceId,
+                content: {
+                    title: '🔔 Upcoming Task',
+                    body: body,
+                    subtitle: triggerDate.toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                    }),
+                    data: {
+                        taskId: task.taskId,
+                        occurrenceId: task.occurrenceId,
+                        screen: 'task-detail',
+                    },
+                },
+                trigger: {
+                    type: Notifications.SchedulableTriggerInputTypes.DATE,
+                    date: triggerDate,
+                },
+            });
+        }
+    } catch (error) {
+        console.error('Failed to schedule notification:', error);
     }
-
-    await Notifications.scheduleNotificationAsync({
-        identifier: task.id,
-        content: {
-            title: 'Time to Start Your Task',
-            body: task.title,
-            subtitle: task.description?.slice(0, 60),
-            data: { taskId: task.id, screen: 'task-detail' },
-        },
-        trigger: {
-            type: Notifications.SchedulableTriggerInputTypes.DATE,
-            date: start,
-        },
-    });
 }
 
-export async function cancelTaskNotification(taskId: string) {
-    await Notifications.cancelScheduledNotificationAsync(taskId);
-}
-
-export async function cancelAllNotifications() {
-    await Notifications.cancelAllScheduledNotificationsAsync();
-}
-
-export async function fetchUpcomingTasksFromDB() {
-    const now = new Date().toISOString();
-
-    const data = await db
-        .select()
-        .from(tasks)
-        .where(and(gte(tasks.start_date, now), eq(tasks.is_completed, false)));
-
-    return data || [];
-}
-
+// Reschedule all upcoming notifications (call this daily via background task)
 export async function rescheduleAllNotifications() {
-    await cancelAllNotifications();
-    const tasks = await fetchUpcomingTasksFromDB();
-    for (const task of tasks) {
-        await scheduleTaskNotification(task);
+    try {
+        await cancelAllNotifications();
+        console.log('Cancelled all previous notifications');
+
+        const upcomingTasks = await fetchUpcomingTasksFromDB(7); // Next 7 days
+
+        console.log(`Scheduling ${upcomingTasks.length} notifications...`);
+
+        for (const task of upcomingTasks) {
+            await scheduleTaskNotification(task);
+        }
+
+        console.log('✅ All notifications rescheduled successfully');
+    } catch (error) {
+        console.error('Failed to reschedule notifications:', error);
     }
 }
