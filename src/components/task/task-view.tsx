@@ -18,22 +18,14 @@ export default function TaskView({ task }: { task: TaskWithOccurrence }) {
     const deleteMutation = useDeleteTaskOccurrence();
     const completeMutation = useToggleTaskCompletion();
 
-    const heightAnim = useRef(new Animated.Value(72)).current;
+    const heightAnim = useRef(new Animated.Value(90)).current;
     const opacityAnim = useRef(new Animated.Value(1)).current;
     const translateXAnim = useRef(new Animated.Value(0)).current;
 
     const deleteTask = () => {
         Animated.parallel([
-            Animated.timing(heightAnim, {
-                toValue: 0,
-                duration: 280,
-                useNativeDriver: false,
-            }),
-            Animated.timing(opacityAnim, {
-                toValue: 0,
-                duration: 220,
-                useNativeDriver: false,
-            }),
+            Animated.timing(heightAnim, { toValue: 0, duration: 280, useNativeDriver: false }),
+            Animated.timing(opacityAnim, { toValue: 0, duration: 220, useNativeDriver: false }),
             Animated.timing(translateXAnim, {
                 toValue: -80,
                 duration: 280,
@@ -59,7 +51,7 @@ export default function TaskView({ task }: { task: TaskWithOccurrence }) {
                 overflow: 'hidden',
             }}
         >
-            <Box className="border-t border-gray-900">
+            <Box className="border-b border-gray-900">
                 <Swipeable
                     renderRightActions={renderRightActions}
                     rightThreshold={80}

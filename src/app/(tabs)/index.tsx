@@ -1,66 +1,111 @@
-import { FlashList } from '@shopify/flash-list';
-import { addDays, isToday, subDays } from 'date-fns';
 import { ArrowLeft, ArrowRight } from 'lucide-react-native';
-import React, { useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
+import { FlatList, useWindowDimensions, View } from 'react-native';
 
 import DateTimePickerField from '@/components/dateTime/DateTimePickerField';
 import { formatDate } from '@/components/dateTime/dateUtil';
-import TaskView from '@/components/task/task-view';
-import { Box } from '@/components/ui/box';
+import DailyContent from '@/components/task/task-view-list';
 import { HStack } from '@/components/ui/hstack';
 import { Pressable } from '@/components/ui/pressable';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
-import { useTasksForDate } from '@/db/hooks/useTasks';
 
-export default function DailyOverviewScreen() {
-    const [selectedDate, setSelectedDate] = useState(new Date());
-    const { data: tasks = [] } = useTasksForDate(selectedDate); // isLoading, refetch
+const DAY_MS = 86_400_000;
 
-    const goToPreviousDay = () => setSelectedDate(subDays(selectedDate, 1));
-    const goToNextDay = () => setSelectedDate(addDays(selectedDate, 1));
-    const goToToday = () => setSelectedDate(new Date());
+const dateToEpochDay = (date: Date) => Math.floor(date.getTime() / DAY_MS);
+const epochDayToDate = (day: number) => new Date(day * DAY_MS);
 
-    const isTodayDate = isToday(selectedDate);
+const BASE_EPOCH = dateToEpochDay(new Date());
+const WINDOW_SIZE = 100000;
+const CENTER = WINDOW_SIZE / 2;
+
+export default function CalendarScreen() {
+    const { width } = useWindowDimensions();
+    const listRef = useRef<FlatList>(null);
+
+    const [epochDay, setEpochDay] = useState(BASE_EPOCH);
+
+    const data = useMemo(() => Array.from({ length: WINDOW_SIZE }, (_, i) => i), []);
+
+    const goToEpochDay = (day: number) => {
+        setEpochDay(day);
+
+        const index = day - BASE_EPOCH + CENTER;
+
+        requestAnimationFrame(() => {
+            listRef.current?.scrollToIndex({
+                index,
+                animated: true,
+            });
+        });
+    };
+
+    const getDateFromIndex = (i: number) => {
+        return epochDayToDate(BASE_EPOCH + (i - CENTER));
+    };
+
+    const initialDate = epochDayToDate(epochDay);
 
     return (
-        <Box className="flex-1 bg-gray-50 dark:bg-zinc-950">
+        <>
             <HStack className="items-center justify-between border-b bg-white px-6 py-4 dark:bg-zinc-900">
-                <Pressable onPress={goToPreviousDay} className="p-3">
+                <Pressable onPress={() => goToEpochDay(epochDay - 1)} className="p-3">
                     <ArrowLeft size={24} />
                 </Pressable>
 
                 <VStack className="items-center">
                     <DateTimePickerField
-                        title={formatDate('date', selectedDate)}
+                        title={formatDate('date', initialDate)}
                         className="text-xl font-semibold"
-                        initialDate={selectedDate}
+                        initialDate={initialDate}
                         mode="date"
-                        onSave={setSelectedDate}
+                        onSave={(newDate) => {
+                            const newEpochDay = dateToEpochDay(newDate);
+                            goToEpochDay(newEpochDay);
+                        }}
                     />
-                    {!isTodayDate && (
-                        <Pressable onPress={goToToday}>
+                    {BASE_EPOCH !== epochDay && (
+                        <Pressable onPress={() => goToEpochDay(BASE_EPOCH)}>
                             <Text className="text-sm text-blue-600">Go to Today</Text>
                         </Pressable>
                     )}
                 </VStack>
 
-                <Pressable onPress={goToNextDay} className="p-3">
+                <Pressable onPress={() => goToEpochDay(epochDay + 1)} className="p-3">
                     <ArrowRight size={24} />
                 </Pressable>
             </HStack>
 
-            <FlashList
-                data={tasks}
-                keyExtractor={(item) => item.occurrenceId}
-                renderItem={({ item }) => <TaskView task={item} />}
-                ListEmptyComponent={
-                    <Box className="items-center justify-center py-20">
-                        <Text className="text-lg text-gray-400">No tasks yet</Text>
-                        <Text className="mt-1 text-gray-400">Tap + to create one</Text>
-                    </Box>
-                }
+            <FlatList
+                ref={listRef}
+                data={data}
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(i) => i.toString()}
+                initialScrollIndex={CENTER}
+                getItemLayout={(_, i) => ({
+                    length: width,
+                    offset: width * i,
+                    index: i,
+                })}
+                decelerationRate="fast"
+                onMomentumScrollEnd={(e) => {
+                    const index = Math.round(e.nativeEvent.contentOffset.x / width);
+
+                    const newEpochDay = BASE_EPOCH + (index - CENTER);
+                    setEpochDay(newEpochDay);
+                }}
+                renderItem={({ item: i }) => {
+                    const date = getDateFromIndex(i);
+
+                    return (
+                        <View style={{ width }}>
+                            <DailyContent date={date} />
+                        </View>
+                    );
+                }}
             />
-        </Box>
+        </>
     );
 }
