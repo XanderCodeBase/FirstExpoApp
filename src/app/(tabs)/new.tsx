@@ -3,7 +3,7 @@ import { Save } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
 
-import DateTimePickerModal from '@/components/dateTime/DateTimePickerModal';
+import DateTimePickerField from '@/components/dateTime/DateTimePickerField';
 import { Box } from '@/components/ui/box';
 import { Button } from '@/components/ui/button';
 import { HStack } from '@/components/ui/hstack';
@@ -47,36 +47,6 @@ export default function NewTaskScreen() {
         end_date: '' as string,
     });
 
-    const [showModal, setShowModal] = useState(false);
-    const [currentField, setCurrentField] = useState<'start_date' | 'due_date' | 'end_date' | null>(
-        null,
-    );
-    const [tempDate, setTempDate] = useState(new Date());
-
-    const openPicker = (field: 'start_date' | 'due_date' | 'end_date') => {
-        setCurrentField(field);
-        setTempDate(form[field] ? new Date(form[field]) : new Date());
-        setShowModal(true);
-    };
-
-    const handleConfirm = () => {
-        if (currentField) {
-            setForm((prev) => ({ ...prev, [currentField]: tempDate.toISOString() }));
-        }
-        setShowModal(false);
-    };
-
-    const formatDisplay = (isoString: string) =>
-        isoString
-            ? new Date(isoString).toLocaleString('en-US', {
-                  weekday: 'short',
-                  month: 'short',
-                  day: 'numeric',
-                  hour: 'numeric',
-                  minute: '2-digit',
-              })
-            : 'Not set';
-
     const toggleDayOfWeek = (day: number) => {
         setForm((prev) => ({
             ...prev,
@@ -109,7 +79,7 @@ export default function NewTaskScreen() {
             },
             {
                 onSuccess: (taskId) => {
-                    Alert.alert('Success', 'Task created successfully!', taskId);
+                    Alert.alert('Success', `Task created successfully: ${taskId}`);
                     router.back();
                 },
             },
@@ -265,67 +235,55 @@ export default function NewTaskScreen() {
                             )}
 
                             {/* Time of Day */}
-                            <VStack>
-                                <Text className="text-typography-700 mb-1.5 font-medium">
-                                    Time of day
-                                </Text>
-                                <Pressable onPress={() => openPicker('start_date')}>
-                                    {/* Reuse for time */}
-                                    <Input pointerEvents="none">
-                                        <InputField value={form.time_of_day} editable={false} />
-                                    </Input>
-                                </Pressable>
-                            </VStack>
+                            <DateTimePickerField
+                                title="Time of day"
+                                initialDate={form.time_of_day}
+                                onSave={(newDate) => {
+                                    setForm((prev) => ({
+                                        ...prev,
+                                        time_of_day: newDate,
+                                    }));
+                                }}
+                            />
 
                             {/* End Date */}
-                            <VStack>
-                                <Text className="text-typography-700 mb-1.5 font-medium">
-                                    End date (optional)
-                                </Text>
-                                <Pressable onPress={() => openPicker('end_date')}>
-                                    <Input pointerEvents="none">
-                                        <InputField
-                                            value={formatDisplay(form.end_date)}
-                                            editable={false}
-                                        />
-                                    </Input>
-                                </Pressable>
-                            </VStack>
+                            <DateTimePickerField
+                                title="End date (optional)"
+                                initialDate={form.end_date}
+                                onSave={(newDate) => {
+                                    setForm((prev) => ({
+                                        ...prev,
+                                        end_date: newDate,
+                                    }));
+                                }}
+                            />
                         </VStack>
                     )}
 
                     {/* Start & Due Date */}
-                    <VStack>
-                        <Text className="mb-1.5 font-medium">Start Date</Text>
-                        <Pressable onPress={() => openPicker('start_date')}>
-                            <Input pointerEvents="none">
-                                <InputField
-                                    value={formatDisplay(form.start_date)}
-                                    editable={false}
-                                />
-                            </Input>
-                        </Pressable>
-                    </VStack>
+                    <DateTimePickerField
+                        title="Start Date"
+                        initialDate={form.start_date}
+                        onSave={(newDate) => {
+                            setForm((prev) => ({
+                                ...prev,
+                                start_date: newDate,
+                            }));
+                        }}
+                    />
 
-                    <VStack>
-                        <Text className="mb-1.5 font-medium">Due Date</Text>
-                        <Pressable onPress={() => openPicker('due_date')}>
-                            <Input pointerEvents="none">
-                                <InputField value={formatDisplay(form.due_date)} editable={false} />
-                            </Input>
-                        </Pressable>
-                    </VStack>
+                    <DateTimePickerField
+                        title="Due Date"
+                        initialDate={form.due_date}
+                        onSave={(newDate) => {
+                            setForm((prev) => ({
+                                ...prev,
+                                due_date: newDate,
+                            }));
+                        }}
+                    />
                 </VStack>
             </ScrollView>
-
-            <DateTimePickerModal
-                open={showModal}
-                onClose={() => setShowModal(false)}
-                currentField={currentField}
-                value={tempDate}
-                onChange={(e, date) => date && setTempDate(date)}
-                onPress={handleConfirm}
-            />
         </Box>
     );
 }

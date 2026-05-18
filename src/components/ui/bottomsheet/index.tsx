@@ -117,9 +117,17 @@ export const BottomSheet = forwardRef<BottomSheetRef, IBottomSheetRootProps>(
             [defaultSnapIndex, onOpen],
         );
 
+        // FIXED: Proper close that triggers gorhom animation
         const handleClose = useCallback(() => {
             Keyboard.dismiss();
-            setCurrentIndex(-1);
+
+            if (bottomSheetRef.current) {
+                bottomSheetRef.current.close();
+            } else {
+                // Fallback when sheet is not yet mounted
+                setIsVisible(false);
+                setCurrentIndex(-1);
+            }
         }, []);
 
         const handleSheetChanges = useCallback(
@@ -174,7 +182,7 @@ export const BottomSheet = forwardRef<BottomSheetRef, IBottomSheetRootProps>(
                 handleSheetChanges,
                 currentIndex,
             }),
-            [handleClose, handleOpen, isVisible, handleSheetChanges, currentIndex],
+            [bottomSheetRef, handleClose, handleOpen, isVisible, handleSheetChanges, currentIndex],
         );
 
         return (

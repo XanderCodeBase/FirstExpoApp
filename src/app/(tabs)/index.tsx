@@ -19,7 +19,7 @@ export default function DailyOverviewScreen() {
     const goToNextDay = () => setSelectedDate(addDays(selectedDate, 1));
     const goToToday = () => setSelectedDate(new Date());
 
-    const displayDate = format(selectedDate, 'EEEE, MMMM d, yyyy');
+    const displayDate = format(selectedDate, 'EEEE, d MMMM yy');
     const isTodayDate = isToday(selectedDate);
 
     return (
@@ -31,7 +31,7 @@ export default function DailyOverviewScreen() {
 
                 <VStack className="items-center">
                     <Text className="text-xl font-semibold">
-                        {isTodayDate ? 'Today' : displayDate} ({tasks.length})
+                        {isTodayDate ? 'Today' : displayDate}
                     </Text>
                     {!isTodayDate && (
                         <Pressable onPress={goToToday}>
