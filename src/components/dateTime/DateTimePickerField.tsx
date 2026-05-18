@@ -1,49 +1,53 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 import { Platform } from 'react-native';
 
-import { createDate, formatDate } from '@/components/dateTime/dateUtil';
+import { formatDate, IOSMode } from '@/components/dateTime/dateUtil';
 import { Pressable } from '@/components/ui/pressable';
 import { Text } from '@/components/ui/text';
-import { VStack } from '@/components/ui/vstack';
 import { useBottomSheet } from '@/providers/BottomSheetProvider';
 
 type Props = {
+    className?: string;
     title: string;
-    initialDate: string;
-    onSave: (newDate: string) => void;
+    initialDate?: Date;
+    mode?: IOSMode;
+    onSave: (newDate: Date) => void;
 };
 
-export default function DateTimePickerField({ title, initialDate, onSave }: Props) {
+export default function DateTimePickerField({
+    className,
+    title,
+    initialDate,
+    mode = 'datetime',
+    onSave,
+}: Props) {
     const { openBottomSheet } = useBottomSheet();
-    const [selectedDate, setSelectedDate] = useState(createDate(initialDate));
+    const selectedDateRef = useRef<Date>(initialDate);
 
-    const openDatePicker = () => {
+    const openDatePicker = (value?: Date) => {
         openBottomSheet({
-            title: `Select ${title}`,
+            title,
             content: (
                 <DateTimePicker
-                    value={selectedDate}
-                    mode="datetime"
+                    value={value || new Date()}
+                    mode={mode}
                     display={Platform.OS === 'ios' ? 'spinner' : 'default'}
                     minuteInterval={15}
                     onChange={(_: any, date?: Date) => {
-                        if (date) setSelectedDate(date);
+                        if (date) selectedDateRef.current = date;
                     }}
                 />
             ),
             onConfirm: () => {
-                onSave(selectedDate.toISOString());
+                onSave(selectedDateRef.current || new Date());
             },
         });
     };
 
     return (
-        <VStack>
-            <Text className="mb-1.5 font-bold">{title}</Text>
-            <Pressable onPress={openDatePicker}>
-                <Text>{formatDate(initialDate ? selectedDate : undefined)}</Text>
-            </Pressable>
-        </VStack>
+        <Pressable onPress={() => openDatePicker(initialDate)}>
+            <Text className={className}>{formatDate(mode, initialDate)}</Text>
+        </Pressable>
     );
 }

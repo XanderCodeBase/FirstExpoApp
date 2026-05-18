@@ -1,8 +1,10 @@
 import { FlashList } from '@shopify/flash-list';
-import { addDays, format, isToday, subDays } from 'date-fns';
+import { addDays, isToday, subDays } from 'date-fns';
 import { ArrowLeft, ArrowRight } from 'lucide-react-native';
 import React, { useState } from 'react';
 
+import DateTimePickerField from '@/components/dateTime/DateTimePickerField';
+import { formatDate } from '@/components/dateTime/dateUtil';
 import TaskView from '@/components/task/task-view';
 import { Box } from '@/components/ui/box';
 import { HStack } from '@/components/ui/hstack';
@@ -19,7 +21,6 @@ export default function DailyOverviewScreen() {
     const goToNextDay = () => setSelectedDate(addDays(selectedDate, 1));
     const goToToday = () => setSelectedDate(new Date());
 
-    const displayDate = format(selectedDate, 'EEEE, d MMMM yy');
     const isTodayDate = isToday(selectedDate);
 
     return (
@@ -30,9 +31,13 @@ export default function DailyOverviewScreen() {
                 </Pressable>
 
                 <VStack className="items-center">
-                    <Text className="text-xl font-semibold">
-                        {isTodayDate ? 'Today' : displayDate}
-                    </Text>
+                    <DateTimePickerField
+                        title={formatDate('date', selectedDate)}
+                        className="text-xl font-semibold"
+                        initialDate={selectedDate}
+                        mode="date"
+                        onSave={setSelectedDate}
+                    />
                     {!isTodayDate && (
                         <Pressable onPress={goToToday}>
                             <Text className="text-sm text-blue-600">Go to Today</Text>

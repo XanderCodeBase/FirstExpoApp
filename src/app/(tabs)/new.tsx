@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
 
 import DateTimePickerField from '@/components/dateTime/DateTimePickerField';
+import { createDate } from '@/components/dateTime/dateUtil';
 import { Box } from '@/components/ui/box';
 import { Button } from '@/components/ui/button';
 import { HStack } from '@/components/ui/hstack';
@@ -235,53 +236,69 @@ export default function NewTaskScreen() {
                             )}
 
                             {/* Time of Day */}
-                            <DateTimePickerField
-                                title="Time of day"
-                                initialDate={form.time_of_day}
-                                onSave={(newDate) => {
-                                    setForm((prev) => ({
-                                        ...prev,
-                                        time_of_day: newDate,
-                                    }));
-                                }}
-                            />
+                            <VStack>
+                                <Text className="mb-1.5 font-bold">Time of day</Text>
+                                <DateTimePickerField
+                                    title="Select time of day"
+                                    initialDate={
+                                        form.time_of_day ? createDate(form.time_of_day) : undefined
+                                    }
+                                    onSave={(newDate) => {
+                                        setForm((prev) => ({
+                                            ...prev,
+                                            time_of_day: newDate.toISOString(),
+                                        }));
+                                    }}
+                                />
+                            </VStack>
 
                             {/* End Date */}
-                            <DateTimePickerField
-                                title="End date (optional)"
-                                initialDate={form.end_date}
-                                onSave={(newDate) => {
-                                    setForm((prev) => ({
-                                        ...prev,
-                                        end_date: newDate,
-                                    }));
-                                }}
-                            />
+                            <VStack>
+                                <Text className="mb-1.5 font-bold">End date</Text>
+                                <DateTimePickerField
+                                    title="Select end date"
+                                    initialDate={
+                                        form.end_date ? createDate(form.end_date) : undefined
+                                    }
+                                    onSave={(newDate) => {
+                                        setForm((prev) => ({
+                                            ...prev,
+                                            end_date: newDate.toISOString(),
+                                        }));
+                                    }}
+                                />
+                            </VStack>
                         </VStack>
                     )}
 
                     {/* Start & Due Date */}
-                    <DateTimePickerField
-                        title="Start Date"
-                        initialDate={form.start_date}
-                        onSave={(newDate) => {
-                            setForm((prev) => ({
-                                ...prev,
-                                start_date: newDate,
-                            }));
-                        }}
-                    />
+                    <VStack>
+                        <Text className="mb-1.5 font-bold">Start date</Text>
+                        <DateTimePickerField
+                            title="Select start date"
+                            initialDate={form.start_date ? createDate(form.start_date) : undefined}
+                            onSave={(newDate) => {
+                                setForm((prev) => ({
+                                    ...prev,
+                                    start_date: newDate.toISOString(),
+                                }));
+                            }}
+                        />
+                    </VStack>
 
-                    <DateTimePickerField
-                        title="Due Date"
-                        initialDate={form.due_date}
-                        onSave={(newDate) => {
-                            setForm((prev) => ({
-                                ...prev,
-                                due_date: newDate,
-                            }));
-                        }}
-                    />
+                    <VStack>
+                        <Text className="mb-1.5 font-bold">Due date</Text>
+                        <DateTimePickerField
+                            title="Select due date"
+                            initialDate={form.due_date ? createDate(form.due_date) : undefined}
+                            onSave={(newDate) => {
+                                setForm((prev) => ({
+                                    ...prev,
+                                    due_date: newDate.toISOString(),
+                                }));
+                            }}
+                        />
+                    </VStack>
                 </VStack>
             </ScrollView>
         </Box>
